@@ -1,0 +1,79 @@
+{
+  "name": "@effect/build-utils",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "description": "Custom utilities used to assist with building and packaging Effect libraries",
+  "engines": {
+    "node": ">=16.17.1"
+  },
+  "scripts": {
+    "version": "changeset version && pnpm install --no-frozen-lockfile && pnpm run docs-update",
+    "release": "pnpm run build && changeset publish",
+    "lint": "eslint . --ext .ts,.tsx",
+    "autofix": "pnpm lint --fix",
+    "vitest": "vitest",
+    "coverage": "vitest run --coverage",
+    "test": "pnpm coverage && pnpm run docs",
+    "clean": "rimraf rm -rf dist/*",
+    "build": "tsup && pnpm copy-package-json",
+    "build:ts": "tsup",
+    "copy-package-json": "ts-node scripts/copy-package-json.ts",
+    "docs": "pnpm build && node -e \"require('./dist/bin')\"",
+    "docs-update": "git add --force --all docs/modules || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/effect-ts/build-utils.git"
+  },
+  "author": "Maxwell Brown <maxwellbrown1990@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/effect-ts/build-utils/issues"
+  },
+  "homepage": "https://github.com/effect-ts/build-utils",
+  "dependencies": {
+    "@effect/cli": "^0.5.0",
+    "@effect/data": "^0.12.9",
+    "@effect/io": "^0.26.2",
+    "@effect/platform": "^0.1.0",
+    "@effect/platform-node": "^0.1.1",
+    "@effect/printer": "^0.8.0",
+    "@effect/printer-ansi": "^0.8.0",
+    "@effect/schema": "^0.20.3"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.1",
+    "@repo-tooling/eslint-plugin-dprint": "^0.0.4",
+    "@types/doctrine": "0.0.5",
+    "@types/fs-extra": "^11.0.1",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^20.3.1",
+    "@types/prettier": "^2.7.3",
+    "@types/rimraf": "^4.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "@vitest/coverage-c8": "^0.32.2",
+    "eslint": "^8.43.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-codegen": "^0.17.0",
+    "eslint-plugin-deprecation": "^1.4.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-sort-destructure-keys": "^1.5.0",
+    "tsup": "^7.0.0",
+    "typescript": "^5.1.3",
+    "vite": "^4.3.9",
+    "vitest": "^0.32.2"
+  },
+  "tags": [],
+  "keywords": [],
+  "config": {
+    "global": [],
+    "modules": [],
+    "side": []
+  }
+}

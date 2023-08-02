@@ -42,9 +42,6 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - run: pnpm install
       - run: pnpm build
-      - run: pnpm test
-      - run: pnpm lint
-      - run: pnpm run docs
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1

@@ -5,22 +5,21 @@ import * as path from "node:path"
 const excludeEffectPackages = (
   deps: Record<string, string>,
 ): Record<string, string> => {
-  return ReadonlyRecord.filter(deps, (_, k) => !k.startsWith("@effect"))
+  return ReadonlyRecord.filter(deps, (_, k) => !k.includes("effect"))
 }
 
 const read = pipe(
   FileSystem.FileSystem,
   Effect.flatMap(fileSystem => fileSystem.readFileString("package.json")),
-  Effect.map(JSON.parse),
+  Effect.map(_ => JSON.parse(_)),
   Effect.map(json => ({
     name: json.name,
     version: json.version,
     description: json.description,
-    main: "bin.js",
-    bin: "bin.js",
+    main: "pack-v1.js",
+    bin: "pack-v1.js",
     engines: json.engines,
     dependencies: excludeEffectPackages(json.dependencies),
-    peerDependencies: excludeEffectPackages(json.peerDependencies),
     repository: json.repository,
     author: json.author,
     license: json.license,

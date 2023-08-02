@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as FileSystem from "@effect/platform-node/FileSystem"
 import { runMain } from "@effect/platform-node/Runtime"
 import { Effect, Layer, pipe, ReadonlyArray } from "effect"
@@ -13,11 +15,11 @@ Effect.gen(function*(_) {
 
   const mkDist = fsUtils.rmAndMkdir("./dist")
   const copyReadme = fs.copy("README.md", "./dist/README.md")
-  const copyTsConfig = fsUtils.cp("./tsconfig.*", "./dist")
+  const copyTsConfig = fsUtils.exec("cp -rf ./tsconfig.* ./dist")
 
-  const copyCjs = fsUtils.copyIfExists("./build/cjs", "./dist")
   const copyMjs = fsUtils.copyIfExists("./build/mjs", "./dist/mjs")
-  const copyDts = fsUtils.copyIfExists("./build/dts", "./dist")
+  const copyCjs = fsUtils.exec("cp -rf ./build/cjs/* ./dist")
+  const copyDts = fsUtils.exec("cp -rf ./build/dts/* ./dist")
   const copySrc = fsUtils.copyIfExists("./src", "./dist/src")
   const modifySourceMaps = fsUtils.modifyGlob("./dist/**/*.map", replace)
 
@@ -53,6 +55,7 @@ Effect.gen(function*(_) {
           },
         },
       },
+      sideEffects: [],
     }
     const addOptional = (key: keyof PackageJson) => {
       if (ctx.packageJson[key]) {
@@ -97,7 +100,6 @@ Effect.gen(function*(_) {
 
   // pack
   yield* _(mkDist)
-
   yield* _(
     Effect.all([
       copyReadme,

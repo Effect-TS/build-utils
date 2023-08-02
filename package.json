@@ -35,8 +35,7 @@
   },
   "homepage": "https://github.com/effect-ts/build-utils",
   "dependencies": {
-    "@effect/cli": "^0.9.0",
-    "@effect/platform-node": "^0.10.2",
+    "@effect/platform-node": "^0.10.4",
     "@effect/schema": "^0.32.0",
     "effect": "2.0.0-next.23",
     "effect-schema-class": "^0.12.0",

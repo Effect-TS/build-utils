@@ -1,15 +1,13 @@
-import * as Command from "@effect/platform-node/Command"
-import * as CommandExecutor from "@effect/platform-node/CommandExecutor"
+import { effectify } from "@effect/platform-node/Effectify"
 import * as FileSystem from "@effect/platform-node/FileSystem"
 import { Context, Effect, Layer } from "effect"
 import { glob } from "glob"
+import * as CP from "node:child_process"
 
 const make = Effect.gen(function*(_) {
   const fs = yield* _(FileSystem.FileSystem)
-  const executor = yield* _(CommandExecutor.CommandExecutor)
 
-  const exec = (command: string, ...args: Array<string>) =>
-    executor.string(Command.make(command, ...args))
+  const exec = effectify(CP.exec)
 
   const globFiles = (pattern: string) =>
     Effect.tryPromise({
@@ -42,19 +40,18 @@ const make = Effect.gen(function*(_) {
       Effect.withSpan("FsUtils.modifyGlob", { attributes: { pattern } }),
     )
 
-  const cp = (from: string, to: string) => exec("cp", "-r", from, to)
-
   const copyIfExists = (from: string, to: string) =>
     fs.access(from).pipe(
       Effect.zipRight(fs.remove(to, { recursive: true })),
-      Effect.zipRight(fs.copy(from, to)),
+      Effect.zipRight(fs.copy(from, to, { overwrite: true })),
       Effect.catchTag("SystemError", e =>
         e.reason === "NotFound" ? Effect.unit : Effect.fail(e)),
+      Effect.withSpan("FsUtils.copyIfExists", { attributes: { from, to } }),
     )
 
   const rmAndMkdir = (path: string) =>
     fs.remove(path, { recursive: true }).pipe(
-      Effect.zipRight(fs.makeDirectory(path, { recursive: true })),
+      Effect.zipRight(fs.makeDirectory(path)),
     )
 
   return {
@@ -62,7 +59,6 @@ const make = Effect.gen(function*(_) {
     globFiles,
     modifyFile,
     modifyGlob,
-    cp,
     copyIfExists,
     rmAndMkdir,
   } as const
@@ -72,5 +68,4 @@ export interface FsUtils extends Effect.Effect.Success<typeof make> {}
 export const FsUtils = Context.Tag<FsUtils>("@effect/build-tools/FsUtils")
 export const FsUtilsLive = Layer.effect(FsUtils, make).pipe(
   Layer.use(FileSystem.layer),
-  Layer.use(Layer.provide(FileSystem.layer, CommandExecutor.layer)),
 )

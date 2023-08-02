@@ -1,12 +1,6 @@
 import * as FileSystem from "@effect/platform-node/FileSystem"
-import { Effect, pipe, ReadonlyRecord } from "effect"
+import { Effect, pipe } from "effect"
 import * as path from "node:path"
-
-const excludeEffectPackages = (
-  deps: Record<string, string>,
-): Record<string, string> => {
-  return ReadonlyRecord.filter(deps, (_, k) => !k.includes("effect"))
-}
 
 const read = pipe(
   FileSystem.FileSystem,
@@ -20,7 +14,6 @@ const read = pipe(
       "pack-v1": "pack-v1.js",
     },
     engines: json.engines,
-    dependencies: excludeEffectPackages(json.dependencies),
     repository: json.repository,
     author: json.author,
     license: json.license,

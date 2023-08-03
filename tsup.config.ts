@@ -1,8 +1,8 @@
 import { defineConfig } from "tsup"
 
 export default defineConfig({
-  entry: ["src/bin.ts"],
+  entry: ["src/main.ts"],
   clean: true,
   publicDir: true,
-  noExternal: [/@effect/]
+  noExternal: [/.*/],
 })

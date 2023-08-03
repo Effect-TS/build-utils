@@ -8,7 +8,6 @@
     "moduleResolution": "node",
     "lib": ["es6"],
     "sourceMap": false,
-    "declaration": true,
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,

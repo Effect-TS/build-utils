@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.1.3
+
+### Patch Changes
+
+- [#7](https://github.com/Effect-TS/build-utils/pull/7) [`76e9649`](https://github.com/Effect-TS/build-utils/commit/76e9649b727d7ba6851f8c0321e7c10a357b18c0) Thanks [@tim-smart](https://github.com/tim-smart)! - copy LICENSE to dist
+
 ## 0.1.2
 
 ### Patch Changes

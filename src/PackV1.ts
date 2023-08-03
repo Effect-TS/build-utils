@@ -90,9 +90,7 @@ export const run = Effect.gen(function*(_) {
 
   const writePackageJson = buildPackageJson.pipe(
     Effect.map(_ => JSON.stringify(_, null, 2)),
-    Effect.flatMap(_ =>
-      fs.writeFile("./dist/package.json", new TextEncoder().encode(_))
-    ),
+    Effect.flatMap(_ => fs.writeFileString("./dist/package.json", _)),
   )
 
   // pack
@@ -104,7 +102,7 @@ export const run = Effect.gen(function*(_) {
       writePackageJson,
       copySources,
     ], { concurrency: "inherit", discard: true }),
-    Effect.withConcurrency(30),
+    Effect.withConcurrency(10),
   )
 }).pipe(
   Effect.provideLayer(

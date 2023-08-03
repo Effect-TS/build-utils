@@ -5,4 +5,5 @@ export default defineConfig({
   clean: true,
   publicDir: true,
   noExternal: [/.*/],
+  treeshake: "smallest",
 })

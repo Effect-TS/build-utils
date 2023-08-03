@@ -77,6 +77,7 @@ const make = Effect.gen(function*(_) {
 
   const rmAndMkdir = (path: string) =>
     fs.remove(path, { recursive: true }).pipe(
+      Effect.ignore,
       Effect.zipRight(mkdirCached(path)),
       Effect.withSpan("FsUtils.rmAndMkdir", { attributes: { path } }),
     )

@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup"
 
 export default defineConfig({
-  entry: ["src/pack-v1.ts"],
+  entry: ["src/main.ts"],
   clean: true,
   publicDir: true,
   noExternal: [/.*/],

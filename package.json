@@ -35,7 +35,8 @@
   },
   "homepage": "https://github.com/effect-ts/build-utils",
   "dependencies": {
-    "@effect/platform-node": "^0.10.4",
+    "@effect/cli": "^0.9.0",
+    "@effect/platform-node": "^0.10.5",
     "@effect/schema": "^0.32.0",
     "effect": "2.0.0-next.23",
     "effect-schema-class": "^0.12.0",
@@ -48,7 +49,7 @@
     "@types/doctrine": "0.0.5",
     "@types/fs-extra": "^11.0.1",
     "@types/glob": "^8.1.0",
-    "@types/node": "^20.4.5",
+    "@types/node": "^20.4.6",
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
@@ -63,7 +64,7 @@
     "prettier": "2",
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
-    "tsup": "^7.1.0",
+    "tsup": "^7.2.0",
     "typescript": "^5.1.6",
     "vite": "^4.4.8",
     "vitest": "^0.34.1"

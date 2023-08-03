@@ -52,7 +52,7 @@ const make = Effect.gen(function*(_) {
       hasMjs,
       hasDts,
       hasSrc,
-    }, { concurrency: "unbounded" }),
+    }, { concurrency: "inherit" }),
     Effect.let(
       "hasMain",
       ({ hasMainCjs, hasMainMjs }) => hasMainCjs || hasMainMjs,

@@ -10,9 +10,7 @@ const read = pipe(
     name: json.name,
     version: json.version,
     description: json.description,
-    bin: {
-      "pack-v1": "pack-v1.js",
-    },
+    bin: "main.js",
     engines: json.engines,
     repository: json.repository,
     author: json.author,

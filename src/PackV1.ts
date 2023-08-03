@@ -1,25 +1,22 @@
-#!/usr/bin/env node
-
 import * as FileSystem from "@effect/platform-node/FileSystem"
-import { runMain } from "@effect/platform-node/Runtime"
 import { Effect, Layer, pipe, ReadonlyArray } from "effect"
 import { posix } from "node:path"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
 import { PackageContext, PackageContextLive } from "./PackageContext"
 
-Effect.gen(function*(_) {
+export const run = Effect.gen(function*(_) {
   const fsUtils = yield* _(FsUtils)
   const fs = yield* _(FileSystem.FileSystem)
   const ctx = yield* _(PackageContext)
 
   const mkDist = fsUtils.rmAndMkdir("./dist")
   const copyReadme = fs.copy("README.md", "./dist/README.md")
-  const copyTsConfig = fsUtils.exec("cp -rf ./tsconfig.* ./dist")
+  const copyTsConfig = fsUtils.copyGlobCached(".", "tsconfig.*", "./dist")
 
   const copyMjs = fsUtils.copyIfExists("./build/mjs", "./dist/mjs")
-  const copyCjs = fsUtils.exec("cp -rf ./build/cjs/* ./dist")
-  const copyDts = fsUtils.exec("cp -rf ./build/dts/* ./dist")
+  const copyCjs = fsUtils.copyGlobCached("./build/cjs", "**/*", "./dist")
+  const copyDts = fsUtils.copyGlobCached("./build/dts", "**/*", "./dist")
   const copySrc = fsUtils.copyIfExists("./src", "./dist/src")
   const modifySourceMaps = fsUtils.modifyGlob("./dist/**/*.map", replace)
 
@@ -28,7 +25,7 @@ Effect.gen(function*(_) {
     copyMjs,
     copyDts,
     copySrc,
-  ], { concurrency: "inherit" }).pipe(
+  ], { concurrency: "inherit", discard: true }).pipe(
     Effect.zipRight(modifySourceMaps),
     Effect.withSpan("Pack-v1/copySources"),
   )
@@ -106,14 +103,13 @@ Effect.gen(function*(_) {
       copyTsConfig,
       writePackageJson,
       copySources,
-    ]),
+    ], { concurrency: "inherit", discard: true }),
+    Effect.withConcurrency(30),
   )
 }).pipe(
   Effect.provideLayer(
     Layer.mergeAll(FileSystem.layer, FsUtilsLive, PackageContextLive),
   ),
-  Effect.tapErrorCause(Effect.logError),
-  runMain,
 )
 
 // ==== utils

@@ -12,6 +12,7 @@ export const run = Effect.gen(function*(_) {
 
   const mkDist = fsUtils.rmAndMkdir("./dist")
   const copyReadme = fs.copy("README.md", "./dist/README.md")
+  const copyLicense = fs.copy("LICENSE", "./dist/LICENSE")
   const copyTsConfig = fsUtils.copyGlobCached(".", "tsconfig.*", "./dist")
 
   const copyMjs = fsUtils.copyIfExists("./build/mjs", "./dist/mjs")
@@ -98,6 +99,7 @@ export const run = Effect.gen(function*(_) {
   yield* _(
     Effect.all([
       copyReadme,
+      copyLicense,
       copyTsConfig,
       writePackageJson,
       copySources,

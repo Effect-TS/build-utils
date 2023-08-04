@@ -21,6 +21,9 @@ export class PackageJson extends SchemaClass({
   peerDependenciesMeta: Schema.optional(
     Schema.record(Schema.string, Schema.struct({ optional: Schema.boolean })),
   ),
+  optionalDependencies: Schema.optional(
+    Schema.record(Schema.string, Schema.string),
+  ),
   gitHead: Schema.optional(Schema.string),
   bin: Schema.optional(Schema.unknown),
 }) {}

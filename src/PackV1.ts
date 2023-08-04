@@ -64,6 +64,7 @@ export const run = Effect.gen(function*(_) {
     addOptional("dependencies")
     addOptional("peerDependencies")
     addOptional("peerDependenciesMeta")
+    addOptional("optionalDependencies")
     addOptional("gitHead")
     addOptional("bin")
 

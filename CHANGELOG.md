@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.1.4
+
+### Patch Changes
+
+- [#9](https://github.com/Effect-TS/build-utils/pull/9) [`0c06338`](https://github.com/Effect-TS/build-utils/commit/0c06338d017edbb83265b191577a98fd09d88553) Thanks [@tim-smart](https://github.com/tim-smart)! - update deps
+
 ## 0.1.3
 
 ### Patch Changes

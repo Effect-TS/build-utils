@@ -1,9 +1,8 @@
 import * as FileSystem from "@effect/platform-node/FileSystem"
 import * as Schema from "@effect/schema/Schema"
 import { Context, Effect, Layer } from "effect"
-import { SchemaClass } from "effect-schema-class"
 
-export class PackageJson extends SchemaClass({
+export class PackageJson extends Schema.Class<PackageJson>()({
   name: Schema.string,
   version: Schema.string,
   description: Schema.string,
@@ -26,16 +25,16 @@ export class PackageJson extends SchemaClass({
   ),
   gitHead: Schema.optional(Schema.string),
   bin: Schema.optional(Schema.unknown),
-}) {}
-
-const parsePackageJson = Schema.parse(PackageJson.schema())
+}) {
+  static readonly parse = Schema.parse(this)
+}
 
 const make = Effect.gen(function*(_) {
   const fs = yield* _(FileSystem.FileSystem)
 
   const packageJson = fs.readFileString("./package.json").pipe(
     Effect.map(_ => JSON.parse(_)),
-    Effect.flatMap(parsePackageJson),
+    Effect.flatMap(PackageJson.parse),
     Effect.withSpan("PackageContext/packageJson"),
   )
 

@@ -2,16 +2,18 @@
 
 import * as CliApp from "@effect/cli/CliApp"
 import * as Command from "@effect/cli/Command"
-import * as Console from "@effect/cli/Console"
+import * as Match from "@effect/match"
 import { runMain } from "@effect/platform-node/Runtime"
-import { Effect, Match, pipe } from "effect"
+import { Effect, pipe } from "effect"
 import * as PackV1 from "./PackV1"
+import * as PrepareV1 from "./PrepareV1"
 
 const packV1 = Command.make("pack-v1")
+const prepareV1 = Command.make("prepare-v1")
 
 const buildUtils = pipe(
   Command.make("build-utils"),
-  Command.subcommands([packV1]),
+  Command.subcommands([packV1, prepareV1]),
 )
 
 const cli = CliApp.make({
@@ -27,12 +29,15 @@ const handleCommand = Match.type<
     { subcommand: { _tag: "Some", value: { name: "pack-v1" } } },
     () => PackV1.run,
   ),
+  Match.when(
+    { subcommand: { _tag: "Some", value: { name: "prepare-v1" } } },
+    () => PrepareV1.run,
+  ),
   Match.orElse(() => Effect.dieMessage("unknown command")),
 )
 
 Effect.sync(() => process.argv.slice(2)).pipe(
   Effect.flatMap(args => CliApp.run(cli, args, handleCommand)),
-  Effect.provideLayer(Console.layer),
   Effect.tapErrorCause(Effect.logError),
   runMain,
 )

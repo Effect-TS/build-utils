@@ -1,19 +1,24 @@
 import * as FileSystem from "@effect/platform-node/FileSystem"
 import * as Path from "@effect/platform-node/Path"
 import { Context, Effect, Layer } from "effect"
-import { glob } from "glob"
+import * as Glob from "glob"
 
 const make = Effect.gen(function*(_) {
   const fs = yield* _(FileSystem.FileSystem)
   const path_ = yield* _(Path.Path)
 
-  const globFiles = (pattern: string) =>
+  const glob = (
+    pattern: string | ReadonlyArray<string>,
+    options?: Glob.GlobOptions,
+  ) =>
     Effect.tryPromise({
-      try: () => glob(pattern, { nodir: true }),
+      try: () => Glob.glob(pattern as any, options as any),
       catch: e => new Error(`glob failed: ${e}`),
     }).pipe(
-      Effect.withSpan("FsUtils.globFiles", { attributes: { pattern } }),
+      Effect.withSpan("FsUtils.glob"),
     )
+
+  const globFiles = (pattern: string) => glob(pattern, { nodir: true })
 
   const modifyFile = (path: string, f: (s: string, path: string) => string) =>
     fs.readFileString(path).pipe(
@@ -82,7 +87,17 @@ const make = Effect.gen(function*(_) {
       Effect.withSpan("FsUtils.rmAndMkdir", { attributes: { path } }),
     )
 
+  const readJson = (path: string) =>
+    Effect.tryMap(fs.readFileString(path), {
+      try: _ => JSON.parse(_),
+      catch: e => new Error(`readJson failed (${path}): ${e}`),
+    })
+
+  const writeJson = (path: string, json: unknown) =>
+    fs.writeFileString(path, JSON.stringify(json, null, 2) + "\n")
+
   return {
+    glob,
     globFiles,
     modifyFile,
     modifyGlob,
@@ -90,6 +105,8 @@ const make = Effect.gen(function*(_) {
     rmAndMkdir,
     mkdirCached,
     copyGlobCached,
+    readJson,
+    writeJson,
   } as const
 })
 

@@ -108,7 +108,7 @@ export const run = Effect.gen(function*(_) {
     Effect.withConcurrency(10),
   )
 }).pipe(
-  Effect.provideLayer(
+  Effect.provide(
     Layer.mergeAll(FileSystem.layer, FsUtilsLive, PackageContextLive),
   ),
 )

@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.1.5
+
+### Patch Changes
+
+- [#13](https://github.com/Effect-TS/build-utils/pull/13) [`96a1f37`](https://github.com/Effect-TS/build-utils/commit/96a1f377b26a8b01a546016a2392740c26059de3) Thanks [@tim-smart](https://github.com/tim-smart)! - add prepare-v1 script
+
 ## 0.1.4
 
 ### Patch Changes

@@ -37,9 +37,7 @@ export const run = Effect.gen(function*(_) {
         ? topPackageJson
         : yield* _(PackageJson.parse(pkgRaw))
       const config = pkg.effect
-      const exportPrefix = dir === "."
-        ? slugify(pkg.name)
-        : `${slugify(topPackageJson.name)}-${path_.basename(dir)}`
+      const exportPrefix = slugify(pkg.name)
       const entrypoints = yield* _(fsUtils.glob(pkg.preconstruct.entrypoints, {
         nodir: true,
         cwd: path_.join(dir, "src"),

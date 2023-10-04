@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.1.6
+
+### Patch Changes
+
+- [#15](https://github.com/Effect-TS/build-utils/pull/15) [`bc7baf9`](https://github.com/Effect-TS/build-utils/commit/bc7baf9dd4d976250068eb45d745552943e4d275) Thanks [@tim-smart](https://github.com/tim-smart)! - fix export prefix in prepare
+
 ## 0.1.5
 
 ### Patch Changes

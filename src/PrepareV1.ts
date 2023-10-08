@@ -39,7 +39,6 @@ export const run = Effect.gen(function*(_) {
           delete config.compilerOptions.declarationMap
           delete config.compilerOptions.plugins
           delete config.compilerOptions.types
-          delete config.compilerOptions.module
           delete config.compilerOptions.noErrorTruncation
           config.compilerOptions.skipLibCheck = true
           config.include = ["**/*"]

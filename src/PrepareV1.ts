@@ -22,27 +22,31 @@ export const run = Effect.gen(function*(_) {
   const topPackageJson = yield* _(PackageJson.parse(topPackageJsonRaw))
 
   const tsConfig = yield* _(
-    fsUtils.readJson("./tsconfig.base.json"),
-    Effect.orElse(() => fsUtils.readJson("./tsconfig.json")),
-    Effect.map(config => {
-      delete config.extends
-      delete config.exclude
-      delete config.compilerOptions.outDir
-      delete config.compilerOptions.baseUrl
-      delete config.compilerOptions.rootDir
-      delete config.compilerOptions.paths
-      delete config.compilerOptions.tsBuildInfoFile
-      delete config.compilerOptions.composite
-      delete config.compilerOptions.declaration
-      delete config.compilerOptions.declarationMap
-      delete config.compilerOptions.plugins
-      delete config.compilerOptions.types
-      delete config.compilerOptions.module
-      delete config.compilerOptions.noErrorTruncation
-      config.compilerOptions.skipLibCheck = true
-      config.include = ["**/*"]
-      return config
-    }),
+    fsUtils.readJson("./tsconfig.dist.json"),
+    Effect.orElse(() =>
+      fsUtils.readJson("./tsconfig.base.json").pipe(
+        Effect.orElse(() => fsUtils.readJson("./tsconfig.json")),
+        Effect.map(config => {
+          delete config.extends
+          delete config.exclude
+          delete config.compilerOptions.outDir
+          delete config.compilerOptions.baseUrl
+          delete config.compilerOptions.rootDir
+          delete config.compilerOptions.paths
+          delete config.compilerOptions.tsBuildInfoFile
+          delete config.compilerOptions.composite
+          delete config.compilerOptions.declaration
+          delete config.compilerOptions.declarationMap
+          delete config.compilerOptions.plugins
+          delete config.compilerOptions.types
+          delete config.compilerOptions.module
+          delete config.compilerOptions.noErrorTruncation
+          config.compilerOptions.skipLibCheck = true
+          config.include = ["**/*"]
+          return config
+        }),
+      )
+    ),
   )
 
   const gitIgnoreTemplate = yield* _(

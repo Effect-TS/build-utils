@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.1.7
+
+### Patch Changes
+
+- [#17](https://github.com/Effect-TS/build-utils/pull/17) [`ded8260`](https://github.com/Effect-TS/build-utils/commit/ded8260d092e743b81a240e2456e74ca2bd1f680) Thanks [@tim-smart](https://github.com/tim-smart)! - add tsconfig to src in prepare-v1
+
+- [#19](https://github.com/Effect-TS/build-utils/pull/19) [`f8c80d7`](https://github.com/Effect-TS/build-utils/commit/f8c80d749c2271eab7e1ef64c1b07e39d43f3d24) Thanks [@tim-smart](https://github.com/tim-smart)! - support tsconfig.dist.json
+
 ## 0.1.6
 
 ### Patch Changes

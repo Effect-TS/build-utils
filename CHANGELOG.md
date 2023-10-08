@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.1.8
+
+### Patch Changes
+
+- [#20](https://github.com/Effect-TS/build-utils/pull/20) [`e99485f`](https://github.com/Effect-TS/build-utils/commit/e99485f005f1f609fc03d07363ffdedbbd22e343) Thanks [@tim-smart](https://github.com/tim-smart)! - don't remove module from tsconfig
+
 ## 0.1.7
 
 ### Patch Changes

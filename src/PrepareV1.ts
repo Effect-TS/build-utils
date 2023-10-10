@@ -177,7 +177,16 @@ export * as ${module} from "${pkgName}/${module}"`
             fs.writeFileString(path_.join(dir, "src/index.ts"), content),
         )
         : Effect.unit,
-      fsUtils.writeJson(path_.join(dir, "src/tsconfig.json"), tsConfig).pipe(
+      fsUtils.writeJson(path_.join(dir, "src/tsconfig.json"), {
+        ...tsConfig,
+        compilerOptions: {
+          ...tsConfig.compilerOptions,
+          paths: {
+            [pkg.name]: ["./index.ts"],
+            [`${pkg.name}/*`]: ["./*.ts"],
+          },
+        },
+      }).pipe(
         Effect.uninterruptible,
       ),
     ], { concurrency: "inherit", discard: true })

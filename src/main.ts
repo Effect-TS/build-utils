@@ -2,9 +2,8 @@
 
 import * as CliApp from "@effect/cli/CliApp"
 import * as Command from "@effect/cli/Command"
-import * as Match from "@effect/match"
 import { runMain } from "@effect/platform-node/Runtime"
-import { Effect, pipe } from "effect"
+import { Effect, Match, pipe } from "effect"
 import * as PackV1 from "./PackV1"
 import * as PrepareV1 from "./PrepareV1"
 

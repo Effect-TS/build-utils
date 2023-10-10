@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.1.9
+
+### Patch Changes
+
+- [#22](https://github.com/Effect-TS/build-utils/pull/22) [`7c6505d`](https://github.com/Effect-TS/build-utils/commit/7c6505d346763dc333ec4e5fa2fdf2abbb2e072c) Thanks [@tim-smart](https://github.com/tim-smart)! - add paths to tsconfig
+
 ## 0.1.8
 
 ### Patch Changes

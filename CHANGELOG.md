@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- [#25](https://github.com/Effect-TS/build-utils/pull/25) [`152f9e6`](https://github.com/Effect-TS/build-utils/commit/152f9e60ecb8299a3841a7699705a1186c78a140) Thanks [@fubhy](https://github.com/fubhy)! - Added `prepare-v2` command
+
 ## 0.1.9
 
 ### Patch Changes

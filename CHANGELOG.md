@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- [#27](https://github.com/Effect-TS/build-utils/pull/27) [`e17c8db`](https://github.com/Effect-TS/build-utils/commit/e17c8dbdcd3f255de4fdd7623aa80ee24a665079) Thanks [@fubhy](https://github.com/fubhy)! - Add pack-v2 command
+
 ## 0.2.0
 
 ### Minor Changes

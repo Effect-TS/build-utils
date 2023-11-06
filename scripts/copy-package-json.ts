@@ -28,7 +28,7 @@ const write = (pkg: object) =>
   pipe(
     FileSystem.FileSystem,
     Effect.flatMap(fileSystem =>
-      fileSystem.writeFileString( pathTo, JSON.stringify(pkg, null, 2))
+      fileSystem.writeFileString(pathTo, JSON.stringify(pkg, null, 2))
     ),
   )
 

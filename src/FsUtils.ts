@@ -46,6 +46,13 @@ const make = Effect.gen(function*(_) {
       Effect.withSpan("FsUtils.modifyGlob", { attributes: { pattern } }),
     )
 
+  const rmAndCopy = (from: string, to: string) =>
+    fs.remove(to, { recursive: true }).pipe(
+      Effect.ignore,
+      Effect.zipRight(fs.copy(from, to)),
+      Effect.withSpan("FsUtils.rmAndCopy", { attributes: { from, to } }),
+    )
+
   const copyIfExists = (from: string, to: string) =>
     fs.access(from).pipe(
       Effect.zipRight(Effect.ignore(fs.remove(to, { recursive: true }))),
@@ -103,6 +110,7 @@ const make = Effect.gen(function*(_) {
     modifyGlob,
     copyIfExists,
     rmAndMkdir,
+    rmAndCopy,
     mkdirCached,
     copyGlobCached,
     readJson,

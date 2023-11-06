@@ -2,6 +2,16 @@ import * as FileSystem from "@effect/platform-node/FileSystem"
 import * as Schema from "@effect/schema/Schema"
 import { Context, Effect, Layer } from "effect"
 
+export class EffectConfig extends Schema.Class<EffectConfig>()({
+  publicModules: Schema.optional(Schema.array(Schema.string)).withDefault(
+    () => ["*.ts"],
+  ),
+}) {
+  static readonly default = new EffectConfig({
+    publicModules: ["*.ts"],
+  })
+}
+
 export class PackageJson extends Schema.Class<PackageJson>()({
   name: Schema.string,
   version: Schema.string,
@@ -25,6 +35,7 @@ export class PackageJson extends Schema.Class<PackageJson>()({
   ),
   gitHead: Schema.optional(Schema.string),
   bin: Schema.optional(Schema.unknown),
+  effect: Schema.optional(EffectConfig).withDefault(() => EffectConfig.default),
 }) {
   static readonly parse = Schema.parse(this)
 }
@@ -40,8 +51,10 @@ const make = Effect.gen(function*(_) {
 
   const hasMainCjs = fs.exists("./build/cjs/index.js")
   const hasMainMjs = fs.exists("./build/mjs/index.mjs")
+  const hasMainEsm = fs.exists("./build/esm/index.js")
   const hasCjs = fs.exists("./build/cjs")
   const hasMjs = fs.exists("./build/mjs")
+  const hasEsm = fs.exists("./build/esm")
   const hasDts = fs.exists("./build/dts")
   const hasSrc = fs.exists("./src")
 
@@ -50,14 +63,17 @@ const make = Effect.gen(function*(_) {
       packageJson,
       hasMainCjs,
       hasMainMjs,
+      hasMainEsm,
       hasCjs,
       hasMjs,
+      hasEsm,
       hasDts,
       hasSrc,
     }, { concurrency: "inherit" }),
     Effect.let(
       "hasMain",
-      ({ hasMainCjs, hasMainMjs }) => hasMainCjs || hasMainMjs,
+      ({ hasMainCjs, hasMainEsm, hasMainMjs }) =>
+        hasMainCjs || hasMainMjs || hasMainEsm,
     ),
     Effect.withSpan("PackageContext/make"),
   )

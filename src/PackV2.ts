@@ -113,6 +113,7 @@ export const run = Effect.gen(function*(_) {
     ? fsUtils.rmAndCopy("build/esm", "dist/dist/esm").pipe(
       Effect.zipRight(fsUtils.writeJson("dist/dist/esm/package.json", {
         type: "module",
+        sideEffects: false,
       })),
     )
     : Effect.unit

@@ -75,23 +75,25 @@ export const run = Effect.gen(function*(_) {
       }
     }
 
-    out.exports = {
-      ...out.exports,
-      ...ReadonlyRecord.fromEntries(modules.map(_ => {
-        const conditions = {
-          ...(ctx.hasDts && { types: `./dist/dts/${_}.d.ts` }),
-          ...(ctx.hasEsm && { import: `./dist/esm/${_}.js` }),
-          ...(ctx.hasCjs && { default: `./dist/cjs/${_}.js` }),
-        }
+    if (ReadonlyArray.length(modules) > 0) {
+      out.exports = {
+        ...out.exports,
+        ...ReadonlyRecord.fromEntries(modules.map(_ => {
+          const conditions = {
+            ...(ctx.hasDts && { types: `./dist/dts/${_}.d.ts` }),
+            ...(ctx.hasEsm && { import: `./dist/esm/${_}.js` }),
+            ...(ctx.hasCjs && { default: `./dist/cjs/${_}.js` }),
+          }
 
-        return [`./${_}`, conditions]
-      })),
-    }
+          return [`./${_}`, conditions]
+        })),
+      }
 
-    out.typesVersions = {
-      "*": ReadonlyRecord.fromEntries(
-        modules.map(_ => [_, [`./dist/dts/${_}.d.ts`]]),
-      ),
+      out.typesVersions = {
+        "*": ReadonlyRecord.fromEntries(
+          modules.map(_ => [_, [`./dist/dts/${_}.d.ts`]]),
+        ),
+      }
     }
 
     return out

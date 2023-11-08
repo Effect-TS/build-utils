@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.3.1
+
+### Patch Changes
+
+- [#29](https://github.com/Effect-TS/build-utils/pull/29) [`2a03acc`](https://github.com/Effect-TS/build-utils/commit/2a03acc98010aecb3f7f015a3a1e5821496e029e) Thanks [@fubhy](https://github.com/fubhy)! - Do not generate exports & types versions if there are no public modules
+
+- [#31](https://github.com/Effect-TS/build-utils/pull/31) [`3a0ec78`](https://github.com/Effect-TS/build-utils/commit/3a0ec789b5a312af9aaeb53361a94ac94648d8a6) Thanks [@fubhy](https://github.com/fubhy)! - Fix tree-shaking
+
 ## 0.3.0
 
 ### Minor Changes

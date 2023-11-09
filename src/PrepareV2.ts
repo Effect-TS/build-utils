@@ -14,7 +14,7 @@ export const run = Effect.gen(function*(_) {
     fsUtils.glob(pkg.effect.publicModules, {
       nodir: true,
       cwd: "src",
-      ignore: ["**/internal/**", "**/index.ts"],
+      ignore: ["**/internal/**", "**/impl/**", "**/index.ts"],
     }),
   )
 
@@ -32,13 +32,17 @@ export const run = Effect.gen(function*(_) {
     Effect.forEach(
       modules,
       module =>
-        Effect.map(
-          fs.readFileString(path.join("src", `${module}.ts`)),
-          content => {
-            const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
-            return `${topComment}\nexport * as ${module} from "./${module}.js"`
-          },
-        ),
+        Effect.gen(function*(_) {
+          const content = yield* _(
+            fs.readFileString(path.join("src", `${module}.ts`)),
+          )
+          const hasImpl = yield* _(
+            fs.exists(path.join("src", "impl", `${module}.ts`)),
+          )
+          const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
+          const exportPattern = hasImpl ? `{ ${module} }` : `* as ${module}`
+          return `${topComment}\nexport ${exportPattern} from "./${module}.js"`
+        }),
       { concurrency: "inherit" },
     ),
   )

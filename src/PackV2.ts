@@ -20,7 +20,7 @@ export const run = Effect.gen(function*(_) {
     fsUtils.glob(ctx.packageJson.effect.publicModules, {
       nodir: true,
       cwd: "src",
-      ignore: ["**/internal/**", "**/index.ts"],
+      ignore: ["**/internal/**", "**/impl/**", "**/index.ts"],
     }),
     Effect.map(ReadonlyArray.map(String.replace(/\.ts$/, ""))),
     Effect.map(ReadonlyArray.sort(Order.string)),

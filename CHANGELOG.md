@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.3.2
+
+### Patch Changes
+
+- [#32](https://github.com/Effect-TS/build-utils/pull/32) [`f29f58a`](https://github.com/Effect-TS/build-utils/commit/f29f58ad596107851e81f05ef53385695423e03e) Thanks [@fubhy](https://github.com/fubhy)! - Added support for `impl`-style modules
+
 ## 0.3.1
 
 ### Patch Changes

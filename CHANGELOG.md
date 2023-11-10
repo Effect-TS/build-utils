@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.4.0
+
+### Minor Changes
+
+- [#34](https://github.com/Effect-TS/build-utils/pull/34) [`01d02ba`](https://github.com/Effect-TS/build-utils/commit/01d02ba049365bf3ea7451f4f05146e88feb0362) Thanks [@fubhy](https://github.com/fubhy)! - Improve support for `impl`-style modules
+
+- [#34](https://github.com/Effect-TS/build-utils/pull/34) [`01d02ba`](https://github.com/Effect-TS/build-utils/commit/01d02ba049365bf3ea7451f4f05146e88feb0362) Thanks [@fubhy](https://github.com/fubhy)! - Split codegen config and allow for both include & exclude glob patterns
+
 ## 0.3.2
 
 ### Patch Changes

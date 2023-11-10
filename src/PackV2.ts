@@ -17,10 +17,14 @@ export const run = Effect.gen(function*(_) {
   const ctx = yield* _(PackageContext)
 
   const modules = yield* _(
-    fsUtils.glob(ctx.packageJson.effect.publicModules, {
+    fsUtils.glob(ctx.packageJson.effect.generateExports.include, {
       nodir: true,
       cwd: "src",
-      ignore: ["**/internal/**", "**/impl/**", "**/index.ts"],
+      ignore: [
+        ...ctx.packageJson.effect.generateExports.exclude,
+        "**/internal/**",
+        "**/index.ts",
+      ],
     }),
     Effect.map(ReadonlyArray.map(String.replace(/\.ts$/, ""))),
     Effect.map(ReadonlyArray.sort(Order.string)),

@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.4.1
+
+### Patch Changes
+
+- [#37](https://github.com/Effect-TS/build-utils/pull/37) [`25c9074`](https://github.com/Effect-TS/build-utils/commit/25c907458f23a1f696ee3e582c031aba0f65f499) Thanks [@fubhy](https://github.com/fubhy)! - Fix prepare-v2 output
+
 ## 0.4.0
 
 ### Minor Changes

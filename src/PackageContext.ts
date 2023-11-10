@@ -2,14 +2,35 @@ import * as FileSystem from "@effect/platform-node/FileSystem"
 import * as Schema from "@effect/schema/Schema"
 import { Context, Effect, Layer } from "effect"
 
+const effectConfigDefaults = {
+  generateExports: {
+    include: ["*.ts", "impl/*.ts"],
+    exclude: [],
+  },
+  generateIndex: {
+    include: ["*.ts"],
+    exclude: [],
+  },
+}
 export class EffectConfig extends Schema.Class<EffectConfig>()({
-  publicModules: Schema.optional(Schema.array(Schema.string)).withDefault(
-    () => ["*.ts"],
-  ),
+  generateExports: Schema.optional(Schema.struct({
+    include: Schema.optional(Schema.array(Schema.string)).withDefault(
+      () => effectConfigDefaults.generateExports.include,
+    ),
+    exclude: Schema.optional(Schema.array(Schema.string)).withDefault(
+      () => effectConfigDefaults.generateExports.exclude,
+    ),
+  })).withDefault(() => effectConfigDefaults.generateExports),
+  generateIndex: Schema.optional(Schema.struct({
+    include: Schema.optional(Schema.array(Schema.string)).withDefault(
+      () => effectConfigDefaults.generateIndex.include,
+    ),
+    exclude: Schema.optional(Schema.array(Schema.string)).withDefault(
+      () => effectConfigDefaults.generateIndex.exclude,
+    ),
+  })).withDefault(() => effectConfigDefaults.generateIndex),
 }) {
-  static readonly default = new EffectConfig({
-    publicModules: ["*.ts"],
-  })
+  static readonly default = new EffectConfig(effectConfigDefaults)
 }
 
 export class PackageJson extends Schema.Class<PackageJson>()({

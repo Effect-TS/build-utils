@@ -11,10 +11,14 @@ export const run = Effect.gen(function*(_) {
   const pkgRaw = yield* _(fsUtils.readJson("package.json"))
   const pkg = yield* _(PackageJson.parse(pkgRaw))
   const entrypoints = yield* _(
-    fsUtils.glob(pkg.effect.publicModules, {
+    fsUtils.glob(pkg.effect.generateIndex.include, {
       nodir: true,
       cwd: "src",
-      ignore: ["**/internal/**", "**/impl/**", "**/index.ts"],
+      ignore: [
+        ...pkg.effect.generateIndex.exclude,
+        "**/internal/**",
+        "**/index.ts",
+      ],
     }),
   )
 
@@ -39,9 +43,16 @@ export const run = Effect.gen(function*(_) {
           const hasImpl = yield* _(
             fs.exists(path.join("src", "impl", `${module}.ts`)),
           )
+
           const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
-          const exportPattern = hasImpl ? `{ ${module} }` : `* as ${module}`
-          return `${topComment}\nexport ${exportPattern} from "./${module}.js"`
+
+          if (hasImpl) {
+            return `export {\n  ${
+              topComment.split("\n").join("\n  ")
+            }\n  ${module}\n} from "./${module}.js"`
+          }
+
+          return `${topComment}\nexport * as ${module} from "./${module}.js"`
         }),
       { concurrency: "inherit" },
     ),

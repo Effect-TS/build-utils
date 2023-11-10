@@ -52,7 +52,7 @@ export const run = Effect.gen(function*(_) {
             }\n  ${module}\n} from "./${module}.js"`
           }
 
-          return `${topComment}\nexport * as ${module} from "./${module}.js"`
+          return `${topComment}\nexport * as "${module}" from "./${module}.js"`
         }),
       { concurrency: "inherit" },
     ),

@@ -44,15 +44,16 @@ export const run = Effect.gen(function*(_) {
             fs.exists(path.join("src", "impl", `${module}.ts`)),
           )
 
+          const moduleName = module.slice(module.lastIndexOf("/") + 1)
           const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
 
           if (hasImpl) {
             return `export {\n  ${
               topComment.split("\n").join("\n  ")
-            }\n  ${module}\n} from "./${module}.js"`
+            }\n  ${moduleName}\n} from "./${module}.js"`
           }
 
-          return `${topComment}\nexport * as ${module} from "./${module}.js"`
+          return `${topComment}\nexport * as ${moduleName} from "./${module}.js"`
         }),
       { concurrency: "inherit" },
     ),

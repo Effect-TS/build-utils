@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.5.0
+
+### Minor Changes
+
+- [#39](https://github.com/Effect-TS/build-utils/pull/39) [`3a0f6b1`](https://github.com/Effect-TS/build-utils/commit/3a0f6b106e3f12901ea300bfe54f46c624f71fd4) Thanks [@fubhy](https://github.com/fubhy)! - Use `sideEffects: []` instead of `sideEffects: false`
+
 ## 0.4.1
 
 ### Patch Changes

@@ -38,7 +38,7 @@ export const run = Effect.gen(function*(_) {
       description: ctx.packageJson.description,
       license: ctx.packageJson.license,
       repository: ctx.packageJson.repository,
-      sideEffects: false,
+      sideEffects: [],
     }
 
     const addOptional = (key: keyof PackageJson) => {
@@ -117,7 +117,7 @@ export const run = Effect.gen(function*(_) {
     ? fsUtils.rmAndCopy("build/esm", "dist/dist/esm").pipe(
       Effect.zipRight(fsUtils.writeJson("dist/dist/esm/package.json", {
         type: "module",
-        sideEffects: false,
+        sideEffects: [],
       })),
     )
     : Effect.unit

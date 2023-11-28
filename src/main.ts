@@ -9,20 +9,20 @@ import * as PackV2 from "./PackV2"
 import * as PrepareV1 from "./PrepareV1"
 import * as PrepareV2 from "./PrepareV2"
 
-const packV1 = Command.make("pack-v1", {}, () => PackV1.run)
-const packV2 = Command.make("pack-v2", {}, () => PackV2.run)
-const prepareV1 = Command.make("prepare-v1", {}, () => PrepareV1.run)
-const prepareV2 = Command.make("prepare-v2", {}, () => PrepareV2.run)
-
-const cli = Command.makeUnit("build-utils").pipe(
-  Command.withSubcommands([packV1, packV2, prepareV1, prepareV2]),
+const cli = Command.make("build-utils").pipe(
+  Command.withSubcommands([
+    Command.make("pack-v1", {}, () => PackV1.run),
+    Command.make("pack-v2", {}, () => PackV2.run),
+    Command.make("prepare-v1", {}, () => PrepareV1.run),
+    Command.make("prepare-v2", {}, () => PrepareV2.run),
+  ]),
   Command.run({
     name: "Effect Build Utils",
     version: "0.0.0",
   }),
 )
 
-Effect.suspend(() => cli(process.argv.slice(2))).pipe(
+cli(process.argv.slice(2)).pipe(
   Effect.provide(NodeContext.layer),
   Effect.tapErrorCause(Effect.logError),
   runMain,

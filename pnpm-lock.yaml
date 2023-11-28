@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -12,8 +12,8 @@ devDependencies:
     specifier: ^2.26.2
     version: 2.26.2
   '@effect/cli':
-    specifier: 0.0.0-snapshot-695f8f6
-    version: 0.0.0-snapshot-695f8f6(@effect/platform@0.31.1)(@effect/printer-ansi@0.24.0)(@effect/printer@0.24.0)(@effect/schema@0.49.4)(effect@2.0.0-next.56)
+    specifier: 0.0.0-snapshot-e8c7625
+    version: 0.0.0-snapshot-e8c7625(@effect/platform@0.31.1)(@effect/printer-ansi@0.24.0)(@effect/printer@0.24.0)(@effect/schema@0.49.4)(effect@2.0.0-next.56)
   '@effect/eslint-plugin':
     specifier: ^0.1.2
     version: 0.1.2
@@ -536,8 +536,8 @@ packages:
     resolution: {integrity: sha512-rPwwm/RrFIolz6xHa8Kzpshuwpe+xu/XcEw9iUmRF2tnyIwxxaW7XoFKaQ+GfPju81cKpH4vJeq7/2IizKvyjg==}
     dev: true
 
-  /@effect/cli@0.0.0-snapshot-695f8f6(@effect/platform@0.31.1)(@effect/printer-ansi@0.24.0)(@effect/printer@0.24.0)(@effect/schema@0.49.4)(effect@2.0.0-next.56):
-    resolution: {integrity: sha512-4eFQqv1fUIt6vzg8ql7X2uNEojcHWrwD9HqWBIAIFIwALZKCRe6XprX+0rlSCWQPxnXcQlz+XAbL0LNYTXzdWA==}
+  /@effect/cli@0.0.0-snapshot-e8c7625(@effect/platform@0.31.1)(@effect/printer-ansi@0.24.0)(@effect/printer@0.24.0)(@effect/schema@0.49.4)(effect@2.0.0-next.56):
+    resolution: {integrity: sha512-nm6pXSgqNRQCoJCq2iW4c/3wDkfLBB5yt6X5zGQGr74J98YrjoXd/I06JslWPbVwTcdcl5hqXL/XeWQ/ure1ag==}
     peerDependencies:
       '@effect/platform': ^0.31.0
       '@effect/printer': ^0.24.0

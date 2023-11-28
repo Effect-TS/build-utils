@@ -1,6 +1,6 @@
 import { FileSystem, Path } from "@effect/platform-node"
 import { Schema } from "@effect/schema"
-import { Effect, Layer, Option, ReadonlyArray } from "effect"
+import { Effect, Option, ReadonlyArray } from "effect"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 
 const defaultGitignoreTemplate = `coverage/
@@ -222,9 +222,7 @@ export * as ${module} from "${pkgName}/${module}"`
     Effect.awaitAllChildren,
   )
 }).pipe(
-  Effect.provide(
-    Layer.mergeAll(FsUtilsLive, FileSystem.layer, Path.layerPosix),
-  ),
+  Effect.provide(FsUtilsLive),
 )
 
 class EffectConfig extends Schema.Class<EffectConfig>()({

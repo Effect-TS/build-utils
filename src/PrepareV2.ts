@@ -1,5 +1,5 @@
 import { FileSystem, Path } from "@effect/platform-node"
-import { Effect, Layer } from "effect"
+import { Effect } from "effect"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import { PackageJson } from "./PackageContext"
 
@@ -66,7 +66,5 @@ export const run = Effect.gen(function*(_) {
     Effect.uninterruptible,
   )
 }).pipe(
-  Effect.provide(
-    Layer.mergeAll(FsUtilsLive, FileSystem.layer, Path.layerPosix),
-  ),
+  Effect.provide(FsUtilsLive),
 )

@@ -121,6 +121,6 @@ const make = Effect.gen(function*(_) {
 export interface FsUtils extends Effect.Effect.Success<typeof make> {}
 export const FsUtils = Context.Tag<FsUtils>("@effect/build-tools/FsUtils")
 export const FsUtilsLive = Layer.effect(FsUtils, make).pipe(
-  Layer.use(FileSystem.layer),
-  Layer.use(Path.layerPosix),
+  Layer.useMerge(FileSystem.layer),
+  Layer.useMerge(Path.layerPosix),
 )

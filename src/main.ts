@@ -3,7 +3,7 @@
 import * as Command from "@effect/cli/Command"
 import * as NodeContext from "@effect/platform-node/NodeContext"
 import { runMain } from "@effect/platform-node/Runtime"
-import { Effect, pipe } from "effect"
+import { Effect } from "effect"
 import * as PackV1 from "./PackV1"
 import * as PackV2 from "./PackV2"
 import * as PrepareV1 from "./PrepareV1"
@@ -14,8 +14,7 @@ const packV2 = Command.make("pack-v2", {}, () => PackV2.run)
 const prepareV1 = Command.make("prepare-v1", {}, () => PrepareV1.run)
 const prepareV2 = Command.make("prepare-v2", {}, () => PrepareV2.run)
 
-const cli = pipe(
-  Command.makeHelp("build-utils"),
+const cli = Command.makeUnit("build-utils").pipe(
   Command.withSubcommands([packV1, packV2, prepareV1, prepareV2]),
   Command.run({
     name: "Effect Build Utils",

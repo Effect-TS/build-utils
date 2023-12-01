@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.5.1
+
+### Patch Changes
+
+- [#42](https://github.com/Effect-TS/build-utils/pull/42) [`82602df`](https://github.com/Effect-TS/build-utils/commit/82602dfb9fd8f70dd98159c55d011b39dcfd74b1) Thanks [@tim-smart](https://github.com/tim-smart)! - move cjs to root directory
+
 ## 0.5.0
 
 ### Minor Changes

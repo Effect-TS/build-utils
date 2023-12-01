@@ -105,5 +105,5 @@ export const PackageContext = Context.Tag<PackageContext>(
   "@effect/build-tools/PackageContext",
 )
 export const PackageContextLive = Layer.effect(PackageContext, make).pipe(
-  Layer.use(FileSystem.layer),
+  Layer.provide(FileSystem.layer),
 )

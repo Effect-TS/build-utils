@@ -18,9 +18,15 @@ const make = Effect.gen(function*(_) {
       Effect.withSpan("FsUtils.glob"),
     )
 
-  const globFiles = (pattern: string) => glob(pattern, { nodir: true })
+  const globFiles = (
+    pattern: string | ReadonlyArray<string>,
+    options: Glob.GlobOptions = {},
+  ) => glob(pattern, { ...options, nodir: true })
 
-  const modifyFile = (path: string, f: (s: string, path: string) => string) =>
+  const modifyFile = (
+    path: string,
+    f: (s: string, path: string) => string,
+  ) =>
     fs.readFileString(path).pipe(
       Effect.bindTo("original"),
       Effect.let("modified", ({ original }) => f(original, path)),
@@ -33,10 +39,11 @@ const make = Effect.gen(function*(_) {
     )
 
   const modifyGlob = (
-    pattern: string,
+    pattern: string | ReadonlyArray<string>,
     f: (s: string, path: string) => string,
+    options?: Glob.GlobOptions,
   ) =>
-    globFiles(pattern).pipe(
+    globFiles(pattern, options).pipe(
       Effect.flatMap(paths =>
         Effect.forEach(paths, path => modifyFile(path, f), {
           concurrency: "inherit",
@@ -121,6 +128,6 @@ const make = Effect.gen(function*(_) {
 export interface FsUtils extends Effect.Effect.Success<typeof make> {}
 export const FsUtils = Context.Tag<FsUtils>("@effect/build-tools/FsUtils")
 export const FsUtilsLive = Layer.effect(FsUtils, make).pipe(
-  Layer.use(FileSystem.layer),
-  Layer.use(Path.layerPosix),
+  Layer.provide(FileSystem.layer),
+  Layer.provide(Path.layerPosix),
 )

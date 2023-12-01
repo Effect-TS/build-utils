@@ -3,10 +3,12 @@ import {
   Effect,
   Layer,
   Order,
+  pipe,
   ReadonlyArray,
   ReadonlyRecord,
   String,
 } from "effect"
+import { posix } from "node:path"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
 import { PackageContext, PackageContextLive } from "./PackageContext"
@@ -56,7 +58,7 @@ export const run = Effect.gen(function*(_) {
     addOptional("bin")
 
     if (ctx.hasMainCjs) {
-      out.main = "./dist/cjs/index.js"
+      out.main = "./index.js"
     }
 
     if (ctx.hasMainEsm) {
@@ -75,7 +77,7 @@ export const run = Effect.gen(function*(_) {
       out.exports["."] = {
         ...(ctx.hasDts && { types: "./dist/dts/index.d.ts" }),
         ...(ctx.hasMainEsm && { import: "./dist/esm/index.js" }),
-        ...(ctx.hasMainCjs && { default: "./dist/cjs/index.js" }),
+        ...(ctx.hasMainCjs && { default: "./index.js" }),
       }
     }
 
@@ -86,7 +88,7 @@ export const run = Effect.gen(function*(_) {
           const conditions = {
             ...(ctx.hasDts && { types: `./dist/dts/${_}.d.ts` }),
             ...(ctx.hasEsm && { import: `./dist/esm/${_}.js` }),
-            ...(ctx.hasCjs && { default: `./dist/cjs/${_}.js` }),
+            ...(ctx.hasCjs && { default: `./${_}.js` }),
           }
 
           return [`./${_}`, conditions]
@@ -122,7 +124,7 @@ export const run = Effect.gen(function*(_) {
     )
     : Effect.unit
   const copyCjs = ctx.hasCjs
-    ? fsUtils.rmAndCopy("build/cjs", "dist/dist/cjs")
+    ? fsUtils.copyGlobCached("build/cjs", "**/*", "dist")
     : Effect.unit
   const copyDts = ctx.hasDts
     ? fsUtils.rmAndCopy("build/dts", "dist/dist/dts")
@@ -132,6 +134,11 @@ export const run = Effect.gen(function*(_) {
       Effect.zipRight(fs.remove("dist/src/.index.ts").pipe(Effect.ignore)),
     )
     : Effect.unit
+  const modifyCjsSourceMaps = fsUtils.modifyGlob(
+    "dist/**/*.map",
+    replace,
+    { ignore: ["dist/dist/**"] },
+  )
 
   const copySources = Effect.all([
     copyEsm,
@@ -139,6 +146,7 @@ export const run = Effect.gen(function*(_) {
     copyDts,
     copySrc,
   ], { concurrency: "inherit", discard: true }).pipe(
+    Effect.zipRight(modifyCjsSourceMaps),
     Effect.withSpan("Pack-v2/copySources"),
   )
 
@@ -162,3 +170,33 @@ export const run = Effect.gen(function*(_) {
     ),
   ),
 )
+
+// ==== utils
+
+export const replace = (content: string, path: string): string =>
+  JSON.stringify(
+    pipe(
+      Object.entries(JSON.parse(content)),
+      ReadonlyArray.map(([k, v]) =>
+        k === "sources"
+          ? ([
+            k,
+            ReadonlyArray.map(v as Array<string>, replaceString(path)),
+          ] as const)
+          : ([k, v] as const)
+      ),
+      ReadonlyArray.reduce({}, (acc, [k, v]) => ({ ...acc, [k]: v })),
+    ),
+  )
+
+const replaceString = (path: string) => {
+  const dir = posix.dirname(path)
+  const patch: (x: string) => string = x =>
+    x.replace(/(.*)\.\.\/\.\.\/src(.*)/gm, "$1src$2")
+  return (content: string) =>
+    pipe(
+      patch(content),
+      x => posix.relative(dir, posix.join(dir, x)),
+      x => (x.startsWith(".") ? x : "./" + x),
+    )
+}

@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.6.0
+
+### Minor Changes
+
+- [#44](https://github.com/Effect-TS/build-utils/pull/44) [`fa2b007`](https://github.com/Effect-TS/build-utils/commit/fa2b0070e6d07b3712a9e06dc248ead8a3ce1c66) Thanks [@fubhy](https://github.com/fubhy)! - Generate proxy packages
+
 ## 0.5.1
 
 ### Patch Changes

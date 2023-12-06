@@ -112,6 +112,7 @@ export const run = Effect.gen(function*(_) {
           main: path.relative(`dist/${_}`, `dist/dist/cjs/${_}.js`),
           module: path.relative(`dist/${_}`, `dist/dist/esm/${_}.js`),
           types: path.relative(`dist/${_}`, `dist/dist/dts/${_}.d.ts`),
+          sideEffects: [],
         })),
       ),
     {

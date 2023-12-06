@@ -3,12 +3,10 @@ import {
   Effect,
   Layer,
   Order,
-  pipe,
   ReadonlyArray,
   ReadonlyRecord,
   String,
 } from "effect"
-import { posix } from "node:path"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
 import { PackageContext, PackageContextLive } from "./PackageContext"
@@ -16,6 +14,7 @@ import { PackageContext, PackageContextLive } from "./PackageContext"
 export const run = Effect.gen(function*(_) {
   const fsUtils = yield* _(FsUtils)
   const fs = yield* _(FileSystem.FileSystem)
+  const path = yield* _(Path.Path)
   const ctx = yield* _(PackageContext)
 
   const modules = yield* _(
@@ -58,7 +57,7 @@ export const run = Effect.gen(function*(_) {
     addOptional("bin")
 
     if (ctx.hasMainCjs) {
-      out.main = "./index.js"
+      out.main = "./dist/cjs/index.js"
     }
 
     if (ctx.hasMainEsm) {
@@ -77,7 +76,7 @@ export const run = Effect.gen(function*(_) {
       out.exports["."] = {
         ...(ctx.hasDts && { types: "./dist/dts/index.d.ts" }),
         ...(ctx.hasMainEsm && { import: "./dist/esm/index.js" }),
-        ...(ctx.hasMainCjs && { default: "./index.js" }),
+        ...(ctx.hasMainCjs && { default: "./dist/cjs/index.js" }),
       }
     }
 
@@ -88,7 +87,7 @@ export const run = Effect.gen(function*(_) {
           const conditions = {
             ...(ctx.hasDts && { types: `./dist/dts/${_}.d.ts` }),
             ...(ctx.hasEsm && { import: `./dist/esm/${_}.js` }),
-            ...(ctx.hasCjs && { default: `./${_}.js` }),
+            ...(ctx.hasCjs && { default: `./dist/cjs/${_}.js` }),
           }
 
           return [`./${_}`, conditions]
@@ -104,6 +103,21 @@ export const run = Effect.gen(function*(_) {
 
     return out
   })
+
+  const createProxies = Effect.forEach(
+    modules,
+    _ =>
+      fsUtils.mkdirCached(`dist/${_}`).pipe(
+        Effect.zipRight(fsUtils.writeJson(`dist/${_}/package.json`, {
+          main: path.relative(`dist/${_}`, `dist/dist/cjs/${_}.js`),
+          module: path.relative(`dist/${_}`, `dist/dist/esm/${_}.js`),
+        })),
+      ),
+    {
+      concurrency: "inherit",
+      discard: true,
+    },
+  )
 
   const writePackageJson = buildPackageJson.pipe(
     Effect.map(_ => JSON.stringify(_, null, 2)),
@@ -124,7 +138,7 @@ export const run = Effect.gen(function*(_) {
     )
     : Effect.unit
   const copyCjs = ctx.hasCjs
-    ? fsUtils.copyGlobCached("build/cjs", "**/*", "dist")
+    ? fsUtils.rmAndCopy("build/cjs", "dist/dist/cjs")
     : Effect.unit
   const copyDts = ctx.hasDts
     ? fsUtils.rmAndCopy("build/dts", "dist/dist/dts")
@@ -134,11 +148,6 @@ export const run = Effect.gen(function*(_) {
       Effect.zipRight(fs.remove("dist/src/.index.ts").pipe(Effect.ignore)),
     )
     : Effect.unit
-  const modifyCjsSourceMaps = fsUtils.modifyGlob(
-    "dist/**/*.map",
-    replace,
-    { ignore: ["dist/dist/**"] },
-  )
 
   const copySources = Effect.all([
     copyEsm,
@@ -146,7 +155,6 @@ export const run = Effect.gen(function*(_) {
     copyDts,
     copySrc,
   ], { concurrency: "inherit", discard: true }).pipe(
-    Effect.zipRight(modifyCjsSourceMaps),
     Effect.withSpan("Pack-v2/copySources"),
   )
 
@@ -157,6 +165,7 @@ export const run = Effect.gen(function*(_) {
       copyReadme,
       copyLicense,
       copySources,
+      createProxies,
     ], { concurrency: "inherit", discard: true }),
     Effect.withConcurrency(10),
   )
@@ -170,33 +179,3 @@ export const run = Effect.gen(function*(_) {
     ),
   ),
 )
-
-// ==== utils
-
-export const replace = (content: string, path: string): string =>
-  JSON.stringify(
-    pipe(
-      Object.entries(JSON.parse(content)),
-      ReadonlyArray.map(([k, v]) =>
-        k === "sources"
-          ? ([
-            k,
-            ReadonlyArray.map(v as Array<string>, replaceString(path)),
-          ] as const)
-          : ([k, v] as const)
-      ),
-      ReadonlyArray.reduce({}, (acc, [k, v]) => ({ ...acc, [k]: v })),
-    ),
-  )
-
-const replaceString = (path: string) => {
-  const dir = posix.dirname(path)
-  const patch: (x: string) => string = x =>
-    x.replace(/(.*)\.\.\/\.\.\/src(.*)/gm, "$1src$2")
-  return (content: string) =>
-    pipe(
-      patch(content),
-      x => posix.relative(dir, posix.join(dir, x)),
-      x => (x.startsWith(".") ? x : "./" + x),
-    )
-}

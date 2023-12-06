@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.0
+
+### Minor Changes
+
+- [#46](https://github.com/Effect-TS/build-utils/pull/46) [`5985ed5`](https://github.com/Effect-TS/build-utils/commit/5985ed55f849dab97ac17f47ac2eb93cd9d656a5) Thanks [@fubhy](https://github.com/fubhy)! - Add `types` field to proxy packages
+
 ## 0.6.0
 
 ### Minor Changes

@@ -111,6 +111,7 @@ export const run = Effect.gen(function*(_) {
         Effect.zipRight(fsUtils.writeJson(`dist/${_}/package.json`, {
           main: path.relative(`dist/${_}`, `dist/dist/cjs/${_}.js`),
           module: path.relative(`dist/${_}`, `dist/dist/esm/${_}.js`),
+          types: path.relative(`dist/${_}`, `dist/dist/dts/${_}.d.ts`),
         })),
       ),
     {

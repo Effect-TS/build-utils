@@ -1,5 +1,7 @@
-import { FileSystem, Path } from "@effect/platform-node"
-import { Effect, Layer } from "effect"
+import * as FileSystem from "@effect/platform-node/FileSystem"
+import * as Path from "@effect/platform-node/Path"
+import * as Effect from "effect/Effect"
+import * as Layer from "effect/Layer"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import { PackageJson } from "./PackageContext"
 

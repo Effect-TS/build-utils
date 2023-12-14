@@ -1,6 +1,8 @@
 import * as FileSystem from "@effect/platform-node/FileSystem"
 import * as Path from "@effect/platform-node/Path"
-import { Context, Effect, Layer } from "effect"
+import * as Context from "effect/Context"
+import * as Effect from "effect/Effect"
+import * as Layer from "effect/Layer"
 import * as Glob from "glob"
 
 const make = Effect.gen(function*(_) {

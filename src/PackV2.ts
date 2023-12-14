@@ -1,12 +1,10 @@
 import { FileSystem, Path } from "@effect/platform-node"
-import {
-  Effect,
-  Layer,
-  Order,
-  ReadonlyArray,
-  ReadonlyRecord,
-  String,
-} from "effect"
+import * as Effect from "effect/Effect"
+import * as Layer from "effect/Layer"
+import * as Order from "effect/Order"
+import * as ReadonlyArray from "effect/ReadonlyArray"
+import * as ReadonlyRecord from "effect/ReadonlyRecord"
+import * as String from "effect/String"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
 import { PackageContext, PackageContextLive } from "./PackageContext"

@@ -2,8 +2,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
-    "outDir": "dist",
     "target": "ES2021",
+    "noEmit": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "lib": ["es6"],

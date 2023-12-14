@@ -1,6 +1,10 @@
-import { FileSystem, Path } from "@effect/platform-node"
-import { Schema } from "@effect/schema"
-import { Effect, Layer, Option, ReadonlyArray } from "effect"
+import * as FileSystem from "@effect/platform-node/FileSystem"
+import * as Path from "@effect/platform-node/Path"
+import * as Schema from "@effect/schema/Schema"
+import * as Effect from "effect/Effect"
+import * as Layer from "effect/Layer"
+import * as Option from "effect/Option"
+import * as ReadonlyArray from "effect/ReadonlyArray"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 
 const defaultGitignoreTemplate = `coverage/

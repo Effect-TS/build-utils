@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.1
+
+### Patch Changes
+
+- [#48](https://github.com/Effect-TS/build-utils/pull/48) [`390b631`](https://github.com/Effect-TS/build-utils/commit/390b6314ebc4ac3ee3cbf4a65e029120694d76ae) Thanks [@tim-smart](https://github.com/tim-smart)! - reduce bundle size
+
 ## 0.7.0
 
 ### Minor Changes

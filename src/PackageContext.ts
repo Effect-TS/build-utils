@@ -15,22 +15,28 @@ const effectConfigDefaults = {
   },
 }
 export class EffectConfig extends Schema.Class<EffectConfig>()({
-  generateExports: Schema.optional(Schema.struct({
-    include: Schema.optional(Schema.array(Schema.string)).withDefault(
-      () => effectConfigDefaults.generateExports.include,
-    ),
-    exclude: Schema.optional(Schema.array(Schema.string)).withDefault(
-      () => effectConfigDefaults.generateExports.exclude,
-    ),
-  })).withDefault(() => effectConfigDefaults.generateExports),
-  generateIndex: Schema.optional(Schema.struct({
-    include: Schema.optional(Schema.array(Schema.string)).withDefault(
-      () => effectConfigDefaults.generateIndex.include,
-    ),
-    exclude: Schema.optional(Schema.array(Schema.string)).withDefault(
-      () => effectConfigDefaults.generateIndex.exclude,
-    ),
-  })).withDefault(() => effectConfigDefaults.generateIndex),
+  generateExports: Schema.optional(
+    Schema.struct({
+      include: Schema.optional(Schema.array(Schema.string), {
+        default: () => effectConfigDefaults.generateExports.include,
+      }),
+      exclude: Schema.optional(Schema.array(Schema.string), {
+        default: () => effectConfigDefaults.generateExports.exclude,
+      }),
+    }),
+    { default: () => effectConfigDefaults.generateExports },
+  ),
+  generateIndex: Schema.optional(
+    Schema.struct({
+      include: Schema.optional(Schema.array(Schema.string), {
+        default: () => effectConfigDefaults.generateIndex.include,
+      }),
+      exclude: Schema.optional(Schema.array(Schema.string), {
+        default: () => effectConfigDefaults.generateIndex.exclude,
+      }),
+    }),
+    { default: () => effectConfigDefaults.generateIndex },
+  ),
 }) {
   static readonly default = new EffectConfig(effectConfigDefaults)
 }
@@ -39,7 +45,7 @@ export class PackageJson extends Schema.Class<PackageJson>()({
   name: Schema.string,
   version: Schema.string,
   description: Schema.string,
-  private: Schema.optional(Schema.boolean).withDefault(() => false),
+  private: Schema.optional(Schema.boolean, { default: () => false }),
   license: Schema.string,
   author: Schema.optional(Schema.string),
   repository: Schema.struct({
@@ -58,9 +64,11 @@ export class PackageJson extends Schema.Class<PackageJson>()({
   ),
   gitHead: Schema.optional(Schema.string),
   bin: Schema.optional(Schema.unknown),
-  effect: Schema.optional(EffectConfig).withDefault(() => EffectConfig.default),
+  effect: Schema.optional(EffectConfig, {
+    default: () => EffectConfig.default,
+  }),
 }) {
-  static readonly parse = Schema.parse(this)
+  static readonly decode = Schema.decodeUnknown(this)
 }
 
 const make = Effect.gen(function*(_) {
@@ -68,7 +76,7 @@ const make = Effect.gen(function*(_) {
 
   const packageJson = fs.readFileString("./package.json").pipe(
     Effect.map(_ => JSON.parse(_)),
-    Effect.flatMap(PackageJson.parse),
+    Effect.flatMap(PackageJson.decode),
     Effect.withSpan("PackageContext/packageJson"),
   )
 

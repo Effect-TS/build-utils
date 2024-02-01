@@ -11,7 +11,7 @@ export const run = Effect.gen(function*(_) {
   const fsUtils = yield* _(FsUtils)
 
   const pkgRaw = yield* _(fsUtils.readJson("package.json"))
-  const pkg = yield* _(PackageJson.parse(pkgRaw))
+  const pkg = yield* _(PackageJson.decode(pkgRaw))
   const entrypoints = yield* _(
     fsUtils.glob(pkg.effect.generateIndex.include, {
       nodir: true,

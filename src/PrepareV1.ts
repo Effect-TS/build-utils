@@ -23,7 +23,7 @@ export const run = Effect.gen(function*(_) {
   const fsUtils = yield* _(FsUtils)
 
   const topPackageJsonRaw = yield* _(fsUtils.readJson("./package.json"))
-  const topPackageJson = yield* _(PackageJson.parse(topPackageJsonRaw))
+  const topPackageJson = yield* _(PackageJson.decode(topPackageJsonRaw))
 
   const tsConfig = yield* _(
     fsUtils.readJson("./tsconfig.dist.json"),
@@ -66,7 +66,7 @@ export const run = Effect.gen(function*(_) {
         : yield* _(fsUtils.readJson(path_.join(dir, "package.json")))
       const pkg = dir === "."
         ? topPackageJson
-        : yield* _(PackageJson.parse(pkgRaw))
+        : yield* _(PackageJson.decode(pkgRaw))
       const config = pkg.effect
       const exportPrefix = slugify(pkg.name)
       const entrypoints = yield* _(fsUtils.glob(pkg.preconstruct.entrypoints, {
@@ -232,8 +232,8 @@ export * as ${module} from "${pkgName}/${module}"`
 )
 
 class EffectConfig extends Schema.Class<EffectConfig>()({
-  generateIndex: Schema.optional(Schema.boolean).withDefault(() => false),
-  includeInternal: Schema.optional(Schema.boolean).withDefault(() => false),
+  generateIndex: Schema.optional(Schema.boolean, { default: () => false }),
+  includeInternal: Schema.optional(Schema.boolean, { default: () => false }),
 }) {
   static readonly default = new EffectConfig({
     generateIndex: false,
@@ -244,14 +244,18 @@ class EffectConfig extends Schema.Class<EffectConfig>()({
 class PackageJson extends Schema.Class<PackageJson>()({
   name: Schema.string,
   preconstruct: Schema.struct({
-    entrypoints: Schema.optional(Schema.array(Schema.string)).withDefault(
-      () => [],
-    ),
-    packages: Schema.optional(Schema.nonEmptyArray(Schema.string)).toOption(),
+    entrypoints: Schema.optional(Schema.array(Schema.string), {
+      default: () => [],
+    }),
+    packages: Schema.optional(Schema.nonEmptyArray(Schema.string), {
+      as: "Option",
+    }),
   }),
-  effect: Schema.optional(EffectConfig).withDefault(() => EffectConfig.default),
+  effect: Schema.optional(EffectConfig, {
+    default: () => EffectConfig.default,
+  }),
 }) {
-  static readonly parse = Schema.parse(this)
+  static readonly decode = Schema.decodeUnknown(this)
 
   get packages(): Effect.Effect<FsUtils, Error, Array<string>> {
     return Option.match(this.preconstruct.packages, {

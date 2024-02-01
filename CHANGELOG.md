@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.2
+
+### Patch Changes
+
+- [#50](https://github.com/Effect-TS/build-utils/pull/50) [`8c0df0e`](https://github.com/Effect-TS/build-utils/commit/8c0df0ef4976220ad3e8ac9ce9151d3c02a978b9) Thanks [@tim-smart](https://github.com/tim-smart)! - update to latest effect
+
 ## 0.7.1
 
 ### Patch Changes

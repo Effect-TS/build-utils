@@ -57,6 +57,7 @@ export class PackageJson extends Schema.Class<PackageJson>()({
     Schema.struct({
       type: Schema.string,
       url: Schema.string,
+      directory: Schema.optional(Schema.string),
     }),
   ),
   dependencies: Schema.optional(Schema.record(Schema.string, Schema.string)),

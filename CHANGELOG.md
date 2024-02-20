@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.7.3
+
+### Patch Changes
+
+- [#52](https://github.com/Effect-TS/build-utils/pull/52) [`ec7b43f`](https://github.com/Effect-TS/build-utils/commit/ec7b43f7948e557ee1b6c550d56138d519b12b61) Thanks [@tim-smart](https://github.com/tim-smart)! - update effect
+
+- [#52](https://github.com/Effect-TS/build-utils/pull/52) [`ec7b43f`](https://github.com/Effect-TS/build-utils/commit/ec7b43f7948e557ee1b6c550d56138d519b12b61) Thanks [@tim-smart](https://github.com/tim-smart)! - add provenance to package.json
+
 ## 0.7.2
 
 ### Patch Changes

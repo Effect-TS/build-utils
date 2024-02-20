@@ -52,10 +52,13 @@ export class PackageJson extends Schema.Class<PackageJson>()({
   })),
   license: Schema.string,
   author: Schema.optional(Schema.string),
-  repository: Schema.struct({
-    type: Schema.string,
-    url: Schema.string,
-  }),
+  repository: Schema.union(
+    Schema.string,
+    Schema.struct({
+      type: Schema.string,
+      url: Schema.string,
+    }),
+  ),
   dependencies: Schema.optional(Schema.record(Schema.string, Schema.string)),
   peerDependencies: Schema.optional(
     Schema.record(Schema.string, Schema.string),

@@ -1,4 +1,5 @@
-import * as FileSystem from "@effect/platform-node/FileSystem"
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
+import { FileSystem } from "@effect/platform/FileSystem"
 import * as Schema from "@effect/schema/Schema"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
@@ -46,6 +47,9 @@ export class PackageJson extends Schema.Class<PackageJson>()({
   version: Schema.string,
   description: Schema.string,
   private: Schema.optional(Schema.boolean, { default: () => false }),
+  publishConfig: Schema.optional(Schema.struct({
+    provenance: Schema.optional(Schema.boolean, { default: () => false }),
+  })),
   license: Schema.string,
   author: Schema.optional(Schema.string),
   repository: Schema.struct({
@@ -72,7 +76,7 @@ export class PackageJson extends Schema.Class<PackageJson>()({
 }
 
 const make = Effect.gen(function*(_) {
-  const fs = yield* _(FileSystem.FileSystem)
+  const fs = yield* _(FileSystem)
 
   const packageJson = fs.readFileString("./package.json").pipe(
     Effect.map(_ => JSON.parse(_)),
@@ -111,9 +115,9 @@ const make = Effect.gen(function*(_) {
 })
 
 export interface PackageContext extends Effect.Effect.Success<typeof make> {}
-export const PackageContext = Context.Tag<PackageContext>(
+export const PackageContext = Context.GenericTag<PackageContext>(
   "@effect/build-tools/PackageContext",
 )
 export const PackageContextLive = Layer.effect(PackageContext, make).pipe(
-  Layer.provide(FileSystem.layer),
+  Layer.provide(NodeFileSystem.layer),
 )

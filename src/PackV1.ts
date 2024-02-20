@@ -1,4 +1,5 @@
-import * as FileSystem from "@effect/platform-node/FileSystem"
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
+import { FileSystem } from "@effect/platform/FileSystem"
 import * as Effect from "effect/Effect"
 import { pipe } from "effect/Function"
 import * as Layer from "effect/Layer"
@@ -10,7 +11,7 @@ import { PackageContext, PackageContextLive } from "./PackageContext"
 
 export const run = Effect.gen(function*(_) {
   const fsUtils = yield* _(FsUtils)
-  const fs = yield* _(FileSystem.FileSystem)
+  const fs = yield* _(FileSystem)
   const ctx = yield* _(PackageContext)
 
   const mkDist = fsUtils.rmAndMkdir("./dist")
@@ -112,7 +113,7 @@ export const run = Effect.gen(function*(_) {
   )
 }).pipe(
   Effect.provide(
-    Layer.mergeAll(FileSystem.layer, FsUtilsLive, PackageContextLive),
+    Layer.mergeAll(NodeFileSystem.layer, FsUtilsLive, PackageContextLive),
   ),
 )
 

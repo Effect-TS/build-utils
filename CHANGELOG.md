@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.5
+
+### Patch Changes
+
+- [#56](https://github.com/Effect-TS/build-utils/pull/56) [`84fc99d`](https://github.com/Effect-TS/build-utils/commit/84fc99dc72c07eab931f466892fa36440e5928ca) Thanks [@tim-smart](https://github.com/tim-smart)! - allows strings for package.json repository
+
 ## 0.7.4
 
 ### Patch Changes

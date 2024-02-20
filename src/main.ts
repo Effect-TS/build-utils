@@ -2,7 +2,7 @@
 
 import * as Command from "@effect/cli/Command"
 import * as NodeContext from "@effect/platform-node/NodeContext"
-import { runMain } from "@effect/platform-node/Runtime"
+import { runMain } from "@effect/platform-node/NodeRuntime"
 import * as Effect from "effect/Effect"
 import * as PackV1 from "./PackV1"
 import * as PackV2 from "./PackV2"

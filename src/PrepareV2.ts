@@ -1,13 +1,15 @@
-import * as FileSystem from "@effect/platform-node/FileSystem"
-import * as Path from "@effect/platform-node/Path"
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
+import * as NodePath from "@effect/platform-node/NodePath"
+import { FileSystem } from "@effect/platform/FileSystem"
+import { Path } from "@effect/platform/Path"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import { PackageJson } from "./PackageContext"
 
 export const run = Effect.gen(function*(_) {
-  const fs = yield* _(FileSystem.FileSystem)
-  const path = yield* _(Path.Path)
+  const fs = yield* _(FileSystem)
+  const path = yield* _(Path)
   const fsUtils = yield* _(FsUtils)
 
   const pkgRaw = yield* _(fsUtils.readJson("package.json"))
@@ -69,6 +71,6 @@ export const run = Effect.gen(function*(_) {
   )
 }).pipe(
   Effect.provide(
-    Layer.mergeAll(FsUtilsLive, FileSystem.layer, Path.layerPosix),
+    Layer.mergeAll(FsUtilsLive, NodeFileSystem.layer, NodePath.layerPosix),
   ),
 )

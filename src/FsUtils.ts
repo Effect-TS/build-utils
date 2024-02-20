@@ -1,13 +1,15 @@
-import * as FileSystem from "@effect/platform-node/FileSystem"
-import * as Path from "@effect/platform-node/Path"
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
+import * as NodePath from "@effect/platform-node/NodePath"
+import { FileSystem } from "@effect/platform/FileSystem"
+import { Path } from "@effect/platform/Path"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Glob from "glob"
 
 const make = Effect.gen(function*(_) {
-  const fs = yield* _(FileSystem.FileSystem)
-  const path_ = yield* _(Path.Path)
+  const fs = yield* _(FileSystem)
+  const path_ = yield* _(Path)
 
   const glob = (
     pattern: string | ReadonlyArray<string>,
@@ -128,8 +130,10 @@ const make = Effect.gen(function*(_) {
 })
 
 export interface FsUtils extends Effect.Effect.Success<typeof make> {}
-export const FsUtils = Context.Tag<FsUtils>("@effect/build-tools/FsUtils")
+export const FsUtils = Context.GenericTag<FsUtils>(
+  "@effect/build-tools/FsUtils",
+)
 export const FsUtilsLive = Layer.effect(FsUtils, make).pipe(
-  Layer.provide(FileSystem.layer),
-  Layer.provide(Path.layerPosix),
+  Layer.provide(NodeFileSystem.layer),
+  Layer.provide(NodePath.layerPosix),
 )

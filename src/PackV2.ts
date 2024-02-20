@@ -1,4 +1,7 @@
-import { FileSystem, Path } from "@effect/platform-node"
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
+import * as NodePath from "@effect/platform-node/NodePath"
+import { FileSystem } from "@effect/platform/FileSystem"
+import { Path } from "@effect/platform/Path"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Order from "effect/Order"
@@ -11,8 +14,8 @@ import { PackageContext, PackageContextLive } from "./PackageContext"
 
 export const run = Effect.gen(function*(_) {
   const fsUtils = yield* _(FsUtils)
-  const fs = yield* _(FileSystem.FileSystem)
-  const path = yield* _(Path.Path)
+  const fs = yield* _(FileSystem)
+  const path = yield* _(Path)
   const ctx = yield* _(PackageContext)
 
   const modules = yield* _(
@@ -53,6 +56,11 @@ export const run = Effect.gen(function*(_) {
     addOptional("optionalDependencies")
     addOptional("gitHead")
     addOptional("bin")
+    addOptional("bin")
+
+    if (ctx.packageJson.publishConfig?.provenance === true) {
+      out.publishConfig = { provenance: true }
+    }
 
     if (ctx.hasMainCjs) {
       out.main = "./dist/cjs/index.js"
@@ -172,8 +180,8 @@ export const run = Effect.gen(function*(_) {
 }).pipe(
   Effect.provide(
     Layer.mergeAll(
-      FileSystem.layer,
-      Path.layerPosix,
+      NodeFileSystem.layer,
+      NodePath.layerPosix,
       FsUtilsLive,
       PackageContextLive,
     ),

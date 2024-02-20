@@ -1,5 +1,7 @@
-import * as FileSystem from "@effect/platform-node/FileSystem"
-import * as Path from "@effect/platform-node/Path"
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
+import * as NodePath from "@effect/platform-node/NodePath"
+import { FileSystem } from "@effect/platform/FileSystem"
+import { Path } from "@effect/platform/Path"
 import * as Schema from "@effect/schema/Schema"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
@@ -18,8 +20,8 @@ dist/
 .direnv/`
 
 export const run = Effect.gen(function*(_) {
-  const fs = yield* _(FileSystem.FileSystem)
-  const path_ = yield* _(Path.Path)
+  const fs = yield* _(FileSystem)
+  const path_ = yield* _(Path)
   const fsUtils = yield* _(FsUtils)
 
   const topPackageJsonRaw = yield* _(fsUtils.readJson("./package.json"))
@@ -227,7 +229,7 @@ export * as ${module} from "${pkgName}/${module}"`
   )
 }).pipe(
   Effect.provide(
-    Layer.mergeAll(FsUtilsLive, FileSystem.layer, Path.layerPosix),
+    Layer.mergeAll(FsUtilsLive, NodeFileSystem.layer, NodePath.layerPosix),
   ),
 )
 
@@ -257,7 +259,7 @@ class PackageJson extends Schema.Class<PackageJson>()({
 }) {
   static readonly decode = Schema.decodeUnknown(this)
 
-  get packages(): Effect.Effect<FsUtils, Error, Array<string>> {
+  get packages(): Effect.Effect<Array<string>, Error, FsUtils> {
     return Option.match(this.preconstruct.packages, {
       onNone: () => Effect.succeed(["."]),
       onSome: globs => Effect.flatMap(FsUtils, fs => fs.glob(globs)),

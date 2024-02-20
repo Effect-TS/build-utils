@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.6
+
+### Patch Changes
+
+- [#58](https://github.com/Effect-TS/build-utils/pull/58) [`dd62fa2`](https://github.com/Effect-TS/build-utils/commit/dd62fa25a2783a263451ce42709b4e632c8ea4c7) Thanks [@tim-smart](https://github.com/tim-smart)! - add directory field to package.json
+
 ## 0.7.5
 
 ### Patch Changes

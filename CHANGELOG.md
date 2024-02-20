@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.4
+
+### Patch Changes
+
+- [#54](https://github.com/Effect-TS/build-utils/pull/54) [`db41931`](https://github.com/Effect-TS/build-utils/commit/db4193123f181e43efea0d5a143d82529b90e58b) Thanks [@tim-smart](https://github.com/tim-smart)! - fix platform dependency
+
 ## 0.7.3
 
 ### Patch Changes

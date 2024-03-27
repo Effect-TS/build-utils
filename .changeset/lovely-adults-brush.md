@@ -2,4 +2,4 @@
 "@effect/build-utils": patch
 ---
 
-generate proxy d.ts for cjs and esm, to address dual package hazard
+Generate proxy `.d.ts` for `cjs` and `esm` and enable automatic `.d.ts` resolution.

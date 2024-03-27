@@ -71,7 +71,7 @@ export const run = Effect.gen(function*(_) {
     }
 
     if (ctx.hasMain && ctx.hasDts) {
-      out.types = "./dist/dts/index.d.ts"
+      out.types = "./dist/cjs/index.d.ts"
     }
 
     out.exports = {
@@ -80,7 +80,6 @@ export const run = Effect.gen(function*(_) {
 
     if (ctx.hasMain) {
       out.exports["."] = {
-        ...(ctx.hasDts && { types: "./dist/dts/index.d.ts" }),
         ...(ctx.hasMainEsm && { import: "./dist/esm/index.js" }),
         ...(ctx.hasMainCjs && { default: "./dist/cjs/index.js" }),
       }
@@ -91,7 +90,6 @@ export const run = Effect.gen(function*(_) {
         ...out.exports,
         ...ReadonlyRecord.fromEntries(modules.map(_ => {
           const conditions = {
-            ...(ctx.hasDts && { types: `./dist/dts/${_}.d.ts` }),
             ...(ctx.hasEsm && { import: `./dist/esm/${_}.js` }),
             ...(ctx.hasCjs && { default: `./dist/cjs/${_}.js` }),
           }
@@ -110,6 +108,24 @@ export const run = Effect.gen(function*(_) {
     return out
   })
 
+  const writeDtsFor = (module: string) =>
+    Effect.all([
+      fs.writeFileString(
+        `dist/dist/cjs/${module}.d.ts`,
+        `export * from "../dts/${module}"`,
+      ),
+      fs.writeFileString(
+        `dist/dist/esm/${module}.d.ts`,
+        `export * from "../dts/${module}.js"`,
+      ),
+    ])
+  const manageDTS = ctx.hasDts
+    ? Effect.forEach(
+      ctx.hasMain ? ["index"].concat(modules) : modules,
+      writeDtsFor,
+    )
+    : Effect.unit
+
   const createProxies = Effect.forEach(
     modules,
     _ =>
@@ -117,7 +133,6 @@ export const run = Effect.gen(function*(_) {
         Effect.zipRight(fsUtils.writeJson(`dist/${_}/package.json`, {
           main: path.relative(`dist/${_}`, `dist/dist/cjs/${_}.js`),
           module: path.relative(`dist/${_}`, `dist/dist/esm/${_}.js`),
-          types: path.relative(`dist/${_}`, `dist/dist/dts/${_}.d.ts`),
           sideEffects: [],
         })),
       ),
@@ -177,6 +192,7 @@ export const run = Effect.gen(function*(_) {
     ], { concurrency: "inherit", discard: true }),
     Effect.withConcurrency(10),
   )
+  yield* _(manageDTS)
 }).pipe(
   Effect.provide(
     Layer.mergeAll(

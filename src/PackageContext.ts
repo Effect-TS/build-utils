@@ -49,6 +49,9 @@ export class PackageJson extends Schema.Class<PackageJson>()({
   private: Schema.optional(Schema.boolean, { default: () => false }),
   publishConfig: Schema.optional(Schema.struct({
     provenance: Schema.optional(Schema.boolean, { default: () => false }),
+    executableFiles: Schema.optional(Schema.array(Schema.string), {
+      default: () => [],
+    }),
   })),
   license: Schema.string,
   author: Schema.optional(Schema.string),

@@ -1,9 +1,9 @@
 import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import { FileSystem } from "@effect/platform/FileSystem"
+import * as Array from "effect/Array"
 import * as Effect from "effect/Effect"
 import { pipe } from "effect/Function"
 import * as Layer from "effect/Layer"
-import * as ReadonlyArray from "effect/ReadonlyArray"
 import { posix } from "node:path"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
@@ -123,15 +123,15 @@ const replace = (content: string, path: string): string =>
   JSON.stringify(
     pipe(
       Object.entries(JSON.parse(content)),
-      ReadonlyArray.map(([k, v]) =>
+      Array.map(([k, v]) =>
         k === "sources"
           ? ([
             k,
-            ReadonlyArray.map(v as Array<string>, replaceString(path)),
+            Array.map(v as Array<string>, replaceString(path)),
           ] as const)
           : ([k, v] as const)
       ),
-      ReadonlyArray.reduce({}, (acc, [k, v]) => ({ ...acc, [k]: v })),
+      Array.reduce({}, (acc, [k, v]) => ({ ...acc, [k]: v })),
     ),
   )
 

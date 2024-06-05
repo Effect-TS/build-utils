@@ -2,11 +2,11 @@ import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import * as NodePath from "@effect/platform-node/NodePath"
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Path } from "@effect/platform/Path"
+import * as Array from "effect/Array"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Order from "effect/Order"
-import * as ReadonlyArray from "effect/ReadonlyArray"
-import * as ReadonlyRecord from "effect/ReadonlyRecord"
+import * as Record from "effect/Record"
 import * as String from "effect/String"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
@@ -28,8 +28,8 @@ export const run = Effect.gen(function*(_) {
         "**/index.ts",
       ],
     }),
-    Effect.map(ReadonlyArray.map(String.replace(/\.ts$/, ""))),
-    Effect.map(ReadonlyArray.sort(Order.string)),
+    Effect.map(Array.map(String.replace(/\.ts$/, ""))),
+    Effect.map(Array.sort(Order.string)),
     Effect.withSpan("Pack-v2/discoverModules"),
   )
 
@@ -40,7 +40,11 @@ export const run = Effect.gen(function*(_) {
       description: ctx.packageJson.description,
       license: ctx.packageJson.license,
       repository: ctx.packageJson.repository,
-      sideEffects: [],
+      sideEffects: ["/dist/cjs/", "/dist/esm/"].flatMap(dir =>
+        ctx.packageJson.sideEffects.map(_ =>
+          _.replace(".ts", ".js").replace("/src/", dir)
+        )
+      ),
     }
 
     const addOptional = (key: keyof PackageJson) => {
@@ -86,10 +90,10 @@ export const run = Effect.gen(function*(_) {
       }
     }
 
-    if (ReadonlyArray.length(modules) > 0) {
+    if (Array.length(modules) > 0) {
       out.exports = {
         ...out.exports,
-        ...ReadonlyRecord.fromEntries(modules.map(_ => {
+        ...Record.fromEntries(modules.map(_ => {
           const conditions = {
             ...(ctx.hasDts && { types: `./dist/dts/${_}.d.ts` }),
             ...(ctx.hasEsm && { import: `./dist/esm/${_}.js` }),
@@ -101,7 +105,7 @@ export const run = Effect.gen(function*(_) {
       }
 
       out.typesVersions = {
-        "*": ReadonlyRecord.fromEntries(
+        "*": Record.fromEntries(
           modules.map(_ => [_, [`./dist/dts/${_}.d.ts`]]),
         ),
       }
@@ -141,21 +145,23 @@ export const run = Effect.gen(function*(_) {
     ? fsUtils.rmAndCopy("build/esm", "dist/dist/esm").pipe(
       Effect.zipRight(fsUtils.writeJson("dist/dist/esm/package.json", {
         type: "module",
-        sideEffects: [],
+        sideEffects: ctx.packageJson.sideEffects.map(_ =>
+          _.replace(".ts", ".js").replace("/src/", "/")
+        ),
       })),
     )
-    : Effect.unit
+    : Effect.void
   const copyCjs = ctx.hasCjs
     ? fsUtils.rmAndCopy("build/cjs", "dist/dist/cjs")
-    : Effect.unit
+    : Effect.void
   const copyDts = ctx.hasDts
     ? fsUtils.rmAndCopy("build/dts", "dist/dist/dts")
-    : Effect.unit
+    : Effect.void
   const copySrc = ctx.hasSrc
     ? fsUtils.rmAndCopy("src", "dist/src").pipe(
       Effect.zipRight(fs.remove("dist/src/.index.ts").pipe(Effect.ignore)),
     )
-    : Effect.unit
+    : Effect.void
 
   const copySources = Effect.all([
     copyEsm,

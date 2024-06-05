@@ -3,10 +3,10 @@ import * as NodePath from "@effect/platform-node/NodePath"
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Path } from "@effect/platform/Path"
 import * as Schema from "@effect/schema/Schema"
+import * as Array from "effect/Array"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
-import * as ReadonlyArray from "effect/ReadonlyArray"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 
 const defaultGitignoreTemplate = `coverage/
@@ -182,7 +182,7 @@ export * as ${module} from "${pkgName}/${module}"`
           content =>
             fs.writeFileString(path_.join(dir, "src/index.ts"), content),
         )
-        : Effect.unit,
+        : Effect.void,
       fsUtils.writeJson(path_.join(dir, "src/tsconfig.json"), {
         ...tsConfig,
         compilerOptions: {
@@ -215,7 +215,7 @@ export * as ${module} from "${pkgName}/${module}"`
       ), { concurrency: "inherit" }),
     Effect.tap(infos =>
       updateVscodeSettings(
-        ReadonlyArray.reduce(
+        Array.reduce(
           infos,
           {},
           (a, b) => ({ ...a, ...b.vscodeIgnore }),
@@ -233,9 +233,9 @@ export * as ${module} from "${pkgName}/${module}"`
   ),
 )
 
-class EffectConfig extends Schema.Class<EffectConfig>()({
-  generateIndex: Schema.optional(Schema.boolean, { default: () => false }),
-  includeInternal: Schema.optional(Schema.boolean, { default: () => false }),
+class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
+  generateIndex: Schema.optional(Schema.Boolean, { default: () => false }),
+  includeInternal: Schema.optional(Schema.Boolean, { default: () => false }),
 }) {
   static readonly default = new EffectConfig({
     generateIndex: false,
@@ -243,13 +243,13 @@ class EffectConfig extends Schema.Class<EffectConfig>()({
   })
 }
 
-class PackageJson extends Schema.Class<PackageJson>()({
-  name: Schema.string,
-  preconstruct: Schema.struct({
-    entrypoints: Schema.optional(Schema.array(Schema.string), {
+class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
+  name: Schema.String,
+  preconstruct: Schema.Struct({
+    entrypoints: Schema.optional(Schema.Array(Schema.String), {
       default: () => [],
     }),
-    packages: Schema.optional(Schema.nonEmptyArray(Schema.string), {
+    packages: Schema.optional(Schema.NonEmptyArray(Schema.String), {
       as: "Option",
     }),
   }),

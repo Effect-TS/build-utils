@@ -24,6 +24,5 @@ const run = Command.make("build-utils").pipe(
 
 run(process.argv).pipe(
   Effect.provide(NodeContext.layer),
-  Effect.tapErrorCause(Effect.logError),
   runMain,
 )

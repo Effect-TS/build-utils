@@ -36,7 +36,7 @@ const make = Effect.gen(function*(_) {
       Effect.let("modified", ({ original }) => f(original, path)),
       Effect.flatMap(({ modified, original }) =>
         original === modified
-          ? Effect.unit
+          ? Effect.void
           : fs.writeFile(path, new TextEncoder().encode(modified))
       ),
       Effect.withSpan("FsUtils.modifyFile", { attributes: { path } }),
@@ -69,7 +69,7 @@ const make = Effect.gen(function*(_) {
       Effect.zipRight(Effect.ignore(fs.remove(to, { recursive: true }))),
       Effect.zipRight(fs.copy(from, to)),
       Effect.catchTag("SystemError", e =>
-        e.reason === "NotFound" ? Effect.unit : Effect.fail(e)),
+        e.reason === "NotFound" ? Effect.void : Effect.fail(e)),
       Effect.withSpan("FsUtils.copyIfExists", { attributes: { from, to } }),
     )
 

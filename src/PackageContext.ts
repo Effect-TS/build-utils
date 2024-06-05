@@ -15,24 +15,24 @@ const effectConfigDefaults = {
     exclude: [],
   },
 }
-export class EffectConfig extends Schema.Class<EffectConfig>()({
+export class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
   generateExports: Schema.optional(
-    Schema.struct({
-      include: Schema.optional(Schema.array(Schema.string), {
+    Schema.Struct({
+      include: Schema.optional(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateExports.include,
       }),
-      exclude: Schema.optional(Schema.array(Schema.string), {
+      exclude: Schema.optional(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateExports.exclude,
       }),
     }),
     { default: () => effectConfigDefaults.generateExports },
   ),
   generateIndex: Schema.optional(
-    Schema.struct({
-      include: Schema.optional(Schema.array(Schema.string), {
+    Schema.Struct({
+      include: Schema.optional(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateIndex.include,
       }),
-      exclude: Schema.optional(Schema.array(Schema.string), {
+      exclude: Schema.optional(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateIndex.exclude,
       }),
     }),
@@ -42,36 +42,39 @@ export class EffectConfig extends Schema.Class<EffectConfig>()({
   static readonly default = new EffectConfig(effectConfigDefaults)
 }
 
-export class PackageJson extends Schema.Class<PackageJson>()({
-  name: Schema.string,
-  version: Schema.string,
-  description: Schema.string,
-  private: Schema.optional(Schema.boolean, { default: () => false }),
-  publishConfig: Schema.optional(Schema.struct({
-    provenance: Schema.optional(Schema.boolean, { default: () => false }),
+export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
+  name: Schema.String,
+  version: Schema.String,
+  description: Schema.String,
+  private: Schema.optional(Schema.Boolean, { default: () => false }),
+  publishConfig: Schema.optional(Schema.Struct({
+    provenance: Schema.optional(Schema.Boolean, { default: () => false }),
   })),
-  license: Schema.string,
-  author: Schema.optional(Schema.string),
-  repository: Schema.union(
-    Schema.string,
-    Schema.struct({
-      type: Schema.string,
-      url: Schema.string,
-      directory: Schema.optional(Schema.string),
+  license: Schema.String,
+  author: Schema.optional(Schema.String),
+  repository: Schema.Union(
+    Schema.String,
+    Schema.Struct({
+      type: Schema.String,
+      url: Schema.String,
+      directory: Schema.optional(Schema.String),
     }),
   ),
-  dependencies: Schema.optional(Schema.record(Schema.string, Schema.string)),
+  sideEffects: Schema.optional(Schema.Array(Schema.String), {
+    default: () => [],
+  }),
+  dependencies: Schema.optional(Schema.Record(Schema.String, Schema.String)),
   peerDependencies: Schema.optional(
-    Schema.record(Schema.string, Schema.string),
+    Schema.Record(Schema.String, Schema.String),
   ),
   peerDependenciesMeta: Schema.optional(
-    Schema.record(Schema.string, Schema.struct({ optional: Schema.boolean })),
+    Schema.Record(Schema.String, Schema.Struct({ optional: Schema.Boolean })),
   ),
   optionalDependencies: Schema.optional(
-    Schema.record(Schema.string, Schema.string),
+    Schema.Record(Schema.String, Schema.String),
   ),
-  gitHead: Schema.optional(Schema.string),
-  bin: Schema.optional(Schema.unknown),
+  gitHead: Schema.optional(Schema.String),
+  bin: Schema.optional(Schema.Unknown),
   effect: Schema.optional(EffectConfig, {
     default: () => EffectConfig.default,
   }),

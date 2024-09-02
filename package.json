@@ -11,19 +11,17 @@
   },
   "packageManager": "pnpm@9.8.0",
   "scripts": {
-    "version": "changeset version && pnpm install --no-frozen-lockfile && pnpm run docs-update",
+    "version": "changeset version && pnpm install --no-frozen-lockfile",
     "release": "pnpm run build && changeset publish",
     "lint": "eslint . --ext .ts,.tsx",
     "autofix": "pnpm lint --fix",
     "vitest": "vitest",
     "coverage": "vitest run --coverage",
-    "test": "pnpm coverage && pnpm run docs",
+    "test": "pnpm coverage",
     "clean": "rimraf rm -rf dist/*",
     "build": "tsup && pnpm copy-package-json",
     "build:ts": "tsup",
-    "copy-package-json": "ts-node scripts/copy-package-json.ts",
-    "docs": "pnpm build && node -e \"require('./dist/bin')\"",
-    "docs-update": "git add --force --all docs/modules || true"
+    "copy-package-json": "ts-node scripts/copy-package-json.ts"
   },
   "repository": {
     "type": "git",

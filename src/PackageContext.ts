@@ -50,7 +50,7 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   private: Schema.optionalWith(Schema.Boolean, { default: () => false }),
   publishConfig: Schema.optional(Schema.Struct({
     provenance: Schema.optionalWith(Schema.Boolean, { default: () => false }),
-    executableFiles: Schema.optional(Schema.array(Schema.string)),
+    executableFiles: Schema.optional(Schema.Array(Schema.String)),
   })),
   license: Schema.String,
   author: Schema.optional(Schema.String),

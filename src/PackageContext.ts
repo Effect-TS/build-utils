@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import { FileSystem } from "@effect/platform/FileSystem"
 import * as Schema from "@effect/schema/Schema"
@@ -15,24 +16,24 @@ const effectConfigDefaults = {
     exclude: [],
   },
 }
-export class EffectConfig extends Schema.Class<EffectConfig>()({
-  generateExports: Schema.optional(
-    Schema.struct({
-      include: Schema.optional(Schema.array(Schema.string), {
+export class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
+  generateExports: Schema.optionalWith(
+    Schema.Struct({
+      include: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateExports.include,
       }),
-      exclude: Schema.optional(Schema.array(Schema.string), {
+      exclude: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateExports.exclude,
       }),
     }),
     { default: () => effectConfigDefaults.generateExports },
   ),
-  generateIndex: Schema.optional(
-    Schema.struct({
-      include: Schema.optional(Schema.array(Schema.string), {
+  generateIndex: Schema.optionalWith(
+    Schema.Struct({
+      include: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateIndex.include,
       }),
-      exclude: Schema.optional(Schema.array(Schema.string), {
+      exclude: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateIndex.exclude,
       }),
     }),
@@ -42,38 +43,47 @@ export class EffectConfig extends Schema.Class<EffectConfig>()({
   static readonly default = new EffectConfig(effectConfigDefaults)
 }
 
-export class PackageJson extends Schema.Class<PackageJson>()({
-  name: Schema.string,
-  version: Schema.string,
-  description: Schema.string,
-  private: Schema.optional(Schema.boolean, { default: () => false }),
-  publishConfig: Schema.optional(Schema.struct({
-    provenance: Schema.optional(Schema.boolean, { default: () => false }),
+export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
+  name: Schema.String,
+  version: Schema.String,
+  description: Schema.String,
+  private: Schema.optionalWith(Schema.Boolean, { default: () => false }),
+  publishConfig: Schema.optional(Schema.Struct({
+    provenance: Schema.optionalWith(Schema.Boolean, { default: () => false }),
     executableFiles: Schema.optional(Schema.array(Schema.string)),
   })),
-  license: Schema.string,
-  author: Schema.optional(Schema.string),
-  repository: Schema.union(
-    Schema.string,
-    Schema.struct({
-      type: Schema.string,
-      url: Schema.string,
-      directory: Schema.optional(Schema.string),
+  license: Schema.String,
+  author: Schema.optional(Schema.String),
+  repository: Schema.Union(
+    Schema.String,
+    Schema.Struct({
+      type: Schema.String,
+      url: Schema.String,
+      directory: Schema.optional(Schema.String),
     }),
   ),
-  dependencies: Schema.optional(Schema.record(Schema.string, Schema.string)),
+  homepage: Schema.optional(Schema.String),
+  sideEffects: Schema.optionalWith(Schema.Array(Schema.String), {
+    default: () => [],
+  }),
+  dependencies: Schema.optional(
+    Schema.Record({ key: Schema.String, value: Schema.String }),
+  ),
   peerDependencies: Schema.optional(
-    Schema.record(Schema.string, Schema.string),
+    Schema.Record({ key: Schema.String, value: Schema.String }),
   ),
   peerDependenciesMeta: Schema.optional(
-    Schema.record(Schema.string, Schema.struct({ optional: Schema.boolean })),
+    Schema.Record({
+      key: Schema.String,
+      value: Schema.Struct({ optional: Schema.Boolean }),
+    }),
   ),
   optionalDependencies: Schema.optional(
-    Schema.record(Schema.string, Schema.string),
+    Schema.Record({ key: Schema.String, value: Schema.String }),
   ),
-  gitHead: Schema.optional(Schema.string),
-  bin: Schema.optional(Schema.unknown),
-  effect: Schema.optional(EffectConfig, {
+  gitHead: Schema.optional(Schema.String),
+  bin: Schema.optional(Schema.Unknown),
+  effect: Schema.optionalWith(EffectConfig, {
     default: () => EffectConfig.default,
   }),
 }) {

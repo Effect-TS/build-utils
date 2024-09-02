@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.7.7
+
+### Patch Changes
+
+- [#62](https://github.com/Effect-TS/build-utils/pull/62) [`5b2d488`](https://github.com/Effect-TS/build-utils/commit/5b2d4883e1640262132e1e71cc69c8121200557c) Thanks [@tim-smart](https://github.com/tim-smart)! - support sideEffects in package.json
+
 ## 0.7.6
 
 ### Patch Changes

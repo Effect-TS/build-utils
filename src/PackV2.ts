@@ -69,6 +69,16 @@ export const run = Effect.gen(function*() {
       out.publishConfig = { provenance: true }
     }
 
+    if (
+      ctx.packageJson.publishConfig?.executableFiles !== undefined
+      && ctx.packageJson.publishConfig.executableFiles.length > 0
+    ) {
+      out.publishConfig = {
+        ...out.publishConfig,
+        executableFiles: ctx.packageJson.publishConfig.executableFiles,
+      }
+    }
+
     if (ctx.hasMainCjs) {
       out.main = "./dist/cjs/index.js"
     }

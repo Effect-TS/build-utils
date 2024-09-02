@@ -12,14 +12,15 @@ import { FsUtils, FsUtilsLive } from "./FsUtils"
 import type { PackageJson } from "./PackageContext"
 import { PackageContext, PackageContextLive } from "./PackageContext"
 
-export const run = Effect.gen(function*(_) {
-  const fsUtils = yield* _(FsUtils)
-  const fs = yield* _(FileSystem)
-  const path = yield* _(Path)
-  const ctx = yield* _(PackageContext)
+export const run = Effect.gen(function*() {
+  const fsUtils = yield* FsUtils
+  const fs = yield* FileSystem
+  const path = yield* Path
+  const ctx = yield* PackageContext
 
-  const modules = yield* _(
-    fsUtils.glob(ctx.packageJson.effect.generateExports.include, {
+  const modules = yield* fsUtils.glob(
+    ctx.packageJson.effect.generateExports.include,
+    {
       nodir: true,
       cwd: "src",
       ignore: [
@@ -27,7 +28,8 @@ export const run = Effect.gen(function*(_) {
         "**/internal/**",
         "**/index.ts",
       ],
-    }),
+    },
+  ).pipe(
     Effect.map(Array.map(String.replace(/\.ts$/, ""))),
     Effect.map(Array.sort(Order.string)),
     Effect.withSpan("Pack-v2/discoverModules"),
@@ -54,6 +56,7 @@ export const run = Effect.gen(function*(_) {
     }
 
     addOptional("author")
+    addOptional("homepage")
     addOptional("dependencies")
     addOptional("peerDependencies")
     addOptional("peerDependenciesMeta")
@@ -172,15 +175,14 @@ export const run = Effect.gen(function*(_) {
     Effect.withSpan("Pack-v2/copySources"),
   )
 
-  yield* _(mkDist)
-  yield* _(
-    Effect.all([
-      writePackageJson,
-      copyReadme,
-      copyLicense,
-      copySources,
-      createProxies,
-    ], { concurrency: "inherit", discard: true }),
+  yield* mkDist
+  yield* Effect.all([
+    writePackageJson,
+    copyReadme,
+    copyLicense,
+    copySources,
+    createProxies,
+  ], { concurrency: "inherit", discard: true }).pipe(
     Effect.withConcurrency(10),
   )
 }).pipe(

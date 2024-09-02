@@ -132,6 +132,7 @@ ${files.map(_ => `/${_}`).join("\n")}
       } as const
     })
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface PkgInfo
     extends Effect.Effect.Success<ReturnType<typeof processPackage>>
   {}
@@ -234,8 +235,10 @@ export * as ${module} from "${pkgName}/${module}"`
 )
 
 class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
-  generateIndex: Schema.optional(Schema.Boolean, { default: () => false }),
-  includeInternal: Schema.optional(Schema.Boolean, { default: () => false }),
+  generateIndex: Schema.optionalWith(Schema.Boolean, { default: () => false }),
+  includeInternal: Schema.optionalWith(Schema.Boolean, {
+    default: () => false,
+  }),
 }) {
   static readonly default = new EffectConfig({
     generateIndex: false,
@@ -246,14 +249,14 @@ class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
 class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   name: Schema.String,
   preconstruct: Schema.Struct({
-    entrypoints: Schema.optional(Schema.Array(Schema.String), {
+    entrypoints: Schema.optionalWith(Schema.Array(Schema.String), {
       default: () => [],
     }),
-    packages: Schema.optional(Schema.NonEmptyArray(Schema.String), {
+    packages: Schema.optionalWith(Schema.NonEmptyArray(Schema.String), {
       as: "Option",
     }),
   }),
-  effect: Schema.optional(EffectConfig, {
+  effect: Schema.optionalWith(EffectConfig, {
     default: () => EffectConfig.default,
   }),
 }) {

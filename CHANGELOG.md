@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.7.8
+
+### Patch Changes
+
+- [#61](https://github.com/Effect-TS/build-utils/pull/61) [`8af9175`](https://github.com/Effect-TS/build-utils/commit/8af91759f5f522811ac98f5d2bf775b35022b925) Thanks [@leonitousconforti](https://github.com/leonitousconforti)! - add executableFiles to publishConfig
+
+- [#64](https://github.com/Effect-TS/build-utils/pull/64) [`7f84590`](https://github.com/Effect-TS/build-utils/commit/7f84590fc58923f145c24593137f15914aef8ef1) Thanks [@tim-smart](https://github.com/tim-smart)! - update dependencies
+
 ## 0.7.7
 
 ### Patch Changes

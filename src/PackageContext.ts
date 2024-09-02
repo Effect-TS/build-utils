@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import { FileSystem } from "@effect/platform/FileSystem"
 import * as Schema from "@effect/schema/Schema"
@@ -16,23 +17,23 @@ const effectConfigDefaults = {
   },
 }
 export class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
-  generateExports: Schema.optional(
+  generateExports: Schema.optionalWith(
     Schema.Struct({
-      include: Schema.optional(Schema.Array(Schema.String), {
+      include: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateExports.include,
       }),
-      exclude: Schema.optional(Schema.Array(Schema.String), {
+      exclude: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateExports.exclude,
       }),
     }),
     { default: () => effectConfigDefaults.generateExports },
   ),
-  generateIndex: Schema.optional(
+  generateIndex: Schema.optionalWith(
     Schema.Struct({
-      include: Schema.optional(Schema.Array(Schema.String), {
+      include: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateIndex.include,
       }),
-      exclude: Schema.optional(Schema.Array(Schema.String), {
+      exclude: Schema.optionalWith(Schema.Array(Schema.String), {
         default: () => effectConfigDefaults.generateIndex.exclude,
       }),
     }),
@@ -46,9 +47,9 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   name: Schema.String,
   version: Schema.String,
   description: Schema.String,
-  private: Schema.optional(Schema.Boolean, { default: () => false }),
+  private: Schema.optionalWith(Schema.Boolean, { default: () => false }),
   publishConfig: Schema.optional(Schema.Struct({
-    provenance: Schema.optional(Schema.Boolean, { default: () => false }),
+    provenance: Schema.optionalWith(Schema.Boolean, { default: () => false }),
   })),
   license: Schema.String,
   author: Schema.optional(Schema.String),
@@ -60,22 +61,28 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
       directory: Schema.optional(Schema.String),
     }),
   ),
-  sideEffects: Schema.optional(Schema.Array(Schema.String), {
+  homepage: Schema.optional(Schema.String),
+  sideEffects: Schema.optionalWith(Schema.Array(Schema.String), {
     default: () => [],
   }),
-  dependencies: Schema.optional(Schema.Record(Schema.String, Schema.String)),
+  dependencies: Schema.optional(
+    Schema.Record({ key: Schema.String, value: Schema.String }),
+  ),
   peerDependencies: Schema.optional(
-    Schema.Record(Schema.String, Schema.String),
+    Schema.Record({ key: Schema.String, value: Schema.String }),
   ),
   peerDependenciesMeta: Schema.optional(
-    Schema.Record(Schema.String, Schema.Struct({ optional: Schema.Boolean })),
+    Schema.Record({
+      key: Schema.String,
+      value: Schema.Struct({ optional: Schema.Boolean }),
+    }),
   ),
   optionalDependencies: Schema.optional(
-    Schema.Record(Schema.String, Schema.String),
+    Schema.Record({ key: Schema.String, value: Schema.String }),
   ),
   gitHead: Schema.optional(Schema.String),
   bin: Schema.optional(Schema.Unknown),
-  effect: Schema.optional(EffectConfig, {
+  effect: Schema.optionalWith(EffectConfig, {
     default: () => EffectConfig.default,
   }),
 }) {

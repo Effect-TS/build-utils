@@ -61,7 +61,7 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
         email: Schema.String,
         url: Schema.optional(Schema.String),
       }),
-    )
+    ),
   ),
   repository: Schema.Union(
     Schema.String,

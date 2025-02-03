@@ -25,7 +25,7 @@ export const run = Effect.gen(function*() {
   })
 
   const modules = entrypoints
-    .map(file => file.replace(/\.ts$/, ""))
+    .map(file => file.replace(/\\/, "/").replace(/\.ts$/, ""))
     .sort()
 
   const template = yield* fs.readFileString("src/.index.ts").pipe(

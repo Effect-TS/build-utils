@@ -53,7 +53,16 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
     executableFiles: Schema.optional(Schema.Array(Schema.String)),
   })),
   license: Schema.String,
-  author: Schema.optional(Schema.String),
+  author: Schema.optional(
+    Schema.Union(
+      Schema.String,
+      Schema.Struct({
+        name: Schema.String,
+        email: Schema.String,
+        url: Schema.optional(Schema.String),
+      }),
+    ),
+  ),
   repository: Schema.Union(
     Schema.String,
     Schema.Struct({

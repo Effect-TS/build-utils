@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.7.9
+
+### Patch Changes
+
+- [#68](https://github.com/Effect-TS/build-utils/pull/68) [`824d62f`](https://github.com/Effect-TS/build-utils/commit/824d62fac11ce5930b078540706e9c6a451fe96e) Thanks [@floydspace](https://github.com/floydspace)! - enhance PackageJson author schema
+
+- [#69](https://github.com/Effect-TS/build-utils/pull/69) [`3932c07`](https://github.com/Effect-TS/build-utils/commit/3932c07990d15e52c4108c1d4a54e2bad68487bc) Thanks [@codingismy11to7](https://github.com/codingismy11to7)! - fix PrepareV2.ts on windows
+
 ## 0.7.8
 
 ### Patch Changes

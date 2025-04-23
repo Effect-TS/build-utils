@@ -129,6 +129,7 @@ const make = Effect.gen(function*(_) {
   } as const
 })
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FsUtils extends Effect.Effect.Success<typeof make> {}
 export const FsUtils = Context.GenericTag<FsUtils>(
   "@effect/build-tools/FsUtils",

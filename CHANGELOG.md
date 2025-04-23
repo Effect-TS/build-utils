@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.0
+
+### Minor Changes
+
+- [#71](https://github.com/Effect-TS/build-utils/pull/71) [`f100a5f`](https://github.com/Effect-TS/build-utils/commit/f100a5f50f86efd40f5dc7fef2999577fcdef35c) Thanks [@fubhy](https://github.com/fubhy)! - add pack-v3 and prepare-v3
+
 ## 0.7.9
 
 ### Patch Changes

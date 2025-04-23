@@ -75,6 +75,9 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   sideEffects: Schema.optionalWith(Schema.Array(Schema.String), {
     default: () => [],
   }),
+  exports: Schema.optional(
+    Schema.Record({ key: Schema.String, value: Schema.String }),
+  ),
   dependencies: Schema.optional(
     Schema.Record({ key: Schema.String, value: Schema.String }),
   ),

@@ -6,15 +6,19 @@ import { runMain } from "@effect/platform-node/NodeRuntime"
 import * as Effect from "effect/Effect"
 import * as PackV1 from "./PackV1"
 import * as PackV2 from "./PackV2"
+import * as PackV3 from "./PackV3"
 import * as PrepareV1 from "./PrepareV1"
 import * as PrepareV2 from "./PrepareV2"
+import * as PrepareV3 from "./PrepareV3"
 
 const run = Command.make("build-utils").pipe(
   Command.withSubcommands([
     Command.make("pack-v1", {}, () => PackV1.run),
     Command.make("pack-v2", {}, () => PackV2.run),
+    Command.make("pack-v3", {}, () => PackV3.run),
     Command.make("prepare-v1", {}, () => PrepareV1.run),
     Command.make("prepare-v2", {}, () => PrepareV2.run),
+    Command.make("prepare-v3", {}, () => PrepareV3.run),
   ]),
   Command.run({
     name: "Effect Build Utils",

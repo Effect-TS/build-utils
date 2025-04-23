@@ -4,6 +4,7 @@ import { FileSystem } from "@effect/platform/FileSystem"
 import { Path } from "@effect/platform/Path"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
+import micromatch from "micromatch"
 import { FsUtilsLive } from "./FsUtils"
 import { PackageContext, PackageContextLive } from "./PackageContext"
 
@@ -17,21 +18,33 @@ export const run = Effect.gen(function*() {
     Effect.orElseSucceed(() => ""),
   )
 
-  const modules = Object.entries(ctx.packageJson.exports ?? {}).filter((
-    [module],
-  ) => module !== "." && path.extname(module) === "")
+  const modules = Object.fromEntries(
+    Object.entries(ctx.packageJson.exports ?? {})
+      .filter(([module]) => module !== "." && path.extname(module) === "")
+      .map(([module, file]) => [module.replace(/^\.\//, ""), file]),
+  )
+
+  const matches = micromatch(Object.keys(modules), [
+    "*",
+    ...ctx.packageJson.effect.generateIndex.include,
+  ], {
+    ignore: ctx.packageJson.effect.generateIndex.exclude,
+  })
 
   const content = yield* Effect.forEach(
-    modules,
-    ([module, file]) =>
+    matches,
+    module =>
       Effect.gen(function*(_) {
+        const file = modules[module]
         const content = yield* _(fs.readFileString(file))
-        const moduleName = module.slice(module.lastIndexOf("/") + 1)
         const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
+        const moduleName = file
+          .slice(file.lastIndexOf("/") + 1)
+          .slice(0, -path.extname(file).length)
         const srcFile = file
-          .replace("/src/", "/")
+          .replace(/^\.\/src\//, "./")
           .replace(/\.ts$/, ".js")
-          .replace(/^\.tsx$/, ".jsx")
+          .replace(/\.tsx$/, ".jsx")
 
         return `${topComment}\nexport * as ${moduleName} from "${srcFile}"`
       }),

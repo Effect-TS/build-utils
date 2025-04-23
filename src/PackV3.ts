@@ -103,9 +103,11 @@ export const run = Effect.gen(function*() {
 
       out.typesVersions = {
         "*": Record.fromEntries(
-          modules.map((
+          modules.filter(([entry]) =>
+            entry !== "." && path.extname(entry) === ""
+          ).map((
             [entry, file],
-          ) => [entry, `./dist/dts/${file}.d.ts`]),
+          ) => [entry.replace(/^\.\//, ""), [`./dist/dts/${file}.d.ts`]]),
         ),
       }
     }

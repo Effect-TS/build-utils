@@ -1,5 +1,13 @@
 # @effect/build-utils
 
+## 0.8.1
+
+### Patch Changes
+
+- [#73](https://github.com/Effect-TS/build-utils/pull/73) [`ec52458`](https://github.com/Effect-TS/build-utils/commit/ec524584de6ea5c48dfddb315928fb570bcf7455) Thanks [@fubhy](https://github.com/fubhy)! - Fixed `typesVersions` output
+
+- [#75](https://github.com/Effect-TS/build-utils/pull/75) [`0e5735a`](https://github.com/Effect-TS/build-utils/commit/0e5735ac7047bcfad6ede077947852e635aa3852) Thanks [@fubhy](https://github.com/fubhy)! - Fix index file creation
+
 ## 0.8.0
 
 ### Minor Changes

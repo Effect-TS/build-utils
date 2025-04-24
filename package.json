@@ -69,6 +69,7 @@
   "tags": [],
   "keywords": [],
   "dependencies": {
-    "micromatch": "^4.0.8"
+    "micromatch": "^4.0.8",
+    "pkg-entry-points": "^1.1.1"
   }
 }

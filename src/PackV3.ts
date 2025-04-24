@@ -2,7 +2,6 @@ import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import * as NodePath from "@effect/platform-node/NodePath"
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Path } from "@effect/platform/Path"
-import * as Array from "effect/Array"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Record from "effect/Record"
@@ -15,14 +14,6 @@ export const run = Effect.gen(function*() {
   const fs = yield* FileSystem
   const path = yield* Path
   const ctx = yield* PackageContext
-  const modules = Object.entries(ctx.packageJson.exports ?? {}).map((
-    [module, file],
-  ) =>
-    [module, file.replace(/^\.\/src\//, "").replace(/\.tsx?$/, "")] as [
-      module: string,
-      file: string,
-    ]
-  )
 
   const buildPackageJson = Effect.sync(() => {
     const out: Record<string, any> = {
@@ -36,7 +27,7 @@ export const run = Effect.gen(function*() {
         ...(ctx.hasEsm ? ["/dist/esm/"] : []),
       ].flatMap(dir =>
         ctx.packageJson.sideEffects.map(_ =>
-          _.replace(".ts", ".js").replace("/src/", dir)
+          _.replace(".ts", ".js").replace(".tsx", ".js").replace("/src/", dir)
         )
       ),
     }
@@ -70,44 +61,43 @@ export const run = Effect.gen(function*() {
       }
     }
 
-    if (Array.length(modules) > 0) {
-      const main = modules.find(([entry]) => entry === ".")?.[1]
-
+    if (Object.keys(ctx.entrypoints).length > 0) {
+      const main = "." in ctx.entrypoints ? ctx.entrypoints["."] : undefined
       if (main !== undefined) {
-        out.main = ctx.hasCjs
-          ? `./dist/cjs/${main}.js`
-          : `./dist/esm/${main}.js`
+        out.main = !main.ts
+          ? main.stripped
+          : `./dist/${ctx.hasCjs ? "cjs" : "esm"}/${main.stripped}.js`
 
-        if (ctx.hasEsm && ctx.hasCjs) {
-          out.module = `./dist/esm/${main}.js`
+        if (main.ts && ctx.hasEsm && ctx.hasCjs) {
+          out.module = `./dist/esm/${main.stripped}.js`
         }
 
-        if (ctx.hasDts) {
-          out.types = `./dist/dts/${main}.d.ts`
+        if (main.ts && ctx.hasDts) {
+          out.types = `./dist/dts/${main.stripped}.d.ts`
         }
       }
 
       out.exports = Record.fromEntries(
-        modules.map(([entry, file]) => {
-          if (path.extname(entry) !== "") {
-            return [entry, file]
+        Object.entries(ctx.entrypoints).map(([entry, module]) => {
+          if (!module.ts) {
+            return [entry, module.stripped]
           }
 
           return [entry, {
-            types: `./dist/dts/${file}.d.ts`,
-            import: `./dist/esm/${file}.js`,
-            default: `./dist/cjs/${file}.js`,
+            types: `./dist/dts/${module.stripped}.d.ts`,
+            import: `./dist/esm/${module.stripped}.js`,
+            default: `./dist/cjs/${module.stripped}.js`,
           }]
         }),
       )
 
       out.typesVersions = {
         "*": Record.fromEntries(
-          modules.filter(([entry]) =>
-            entry !== "." && path.extname(entry) === ""
-          ).map((
-            [entry, file],
-          ) => [entry.replace(/^\.\//, ""), [`./dist/dts/${file}.d.ts`]]),
+          Object.entries(ctx.entrypoints)
+            .filter(([entry, module]) => entry !== "." && module.ts)
+            .map(([entry, module]) => [entry.replace(/^\.\//, ""), [
+              `./dist/dts/${module.stripped}.d.ts`,
+            ]]),
         ),
       }
     }
@@ -116,26 +106,36 @@ export const run = Effect.gen(function*() {
   })
 
   const createProxies = Effect.forEach(
-    modules.filter(([entry]) => entry !== "." && path.extname(entry) === ""),
-    ([entry, file]) =>
-      fsUtils.mkdirCached(`dist/${entry}`).pipe(
-        Effect.zipRight(fsUtils.writeJson(`dist/${entry}/package.json`, {
-          main: path.relative(
-            `dist/${entry}`,
-            `dist/dist/${ctx.hasCjs ? "cjs" : "esm"}/${file}.js`,
-          ),
-          ...(ctx.hasEsm && ctx.hasCjs
-            ? {
-              module: path.relative(
-                `dist/${entry}`,
-                `dist/dist/esm/${file}.js`,
-              ),
-            }
-            : {}),
-          types: path.relative(`dist/${entry}`, `dist/dist/dts/${file}.d.ts`),
+    Object.entries(ctx.entrypoints).filter(([entry, module]) =>
+      entry !== "." && module.ts
+    ),
+    ([entry, module]) =>
+      Effect.gen(function*() {
+        yield* fsUtils.mkdirCached(`dist/${entry}`)
+
+        const out: Record<string, any> = {
           sideEffects: [],
-        })),
-      ),
+        }
+
+        out.main = path.relative(
+          `dist/${entry}`,
+          `dist/dist/${ctx.hasCjs ? "cjs" : "esm"}/${module.stripped}.js`,
+        )
+
+        if (ctx.hasEsm && ctx.hasCjs) {
+          out.module = path.relative(
+            `dist/${entry}`,
+            `dist/dist/esm/${module.stripped}.js`,
+          )
+        }
+
+        out.types = path.relative(
+          `dist/${entry}`,
+          `dist/dist/dts/${module.stripped}.d.ts`,
+        )
+
+        yield* fsUtils.writeJson(`dist/${entry}/package.json`, out)
+      }),
     {
       concurrency: "inherit",
       discard: true,

@@ -20,6 +20,7 @@ const read = pipe(
     homepage: json.homepage,
     tags: json.tags,
     keywords: json.keywords,
+    dependencies: json.dependencies,
   })),
 )
 

@@ -18,35 +18,36 @@ export const run = Effect.gen(function*() {
     Effect.orElseSucceed(() => ""),
   )
 
-  const modules = Object.fromEntries(
-    Object.entries(ctx.packageJson.exports ?? {})
-      .filter(([module]) => module !== "." && path.extname(module) === "")
-      .map(([module, file]) => [module.replace(/^\.\//, ""), file]),
-  )
+  const modules = Object.entries(ctx.entrypoints)
+    .filter(([entry, module]) => module.ts && entry !== ".")
+    .map(([, module]) => module.original.replace(/^\.\/src\//, ""))
+    .filter((current, index, array) => array.indexOf(current) === index)
 
-  const matches = micromatch(Object.keys(modules), [
-    "*",
+  const matches = micromatch(modules, [
+    "*.ts",
     ...ctx.packageJson.effect.generateIndex.include,
   ], {
-    ignore: ctx.packageJson.effect.generateIndex.exclude,
+    ignore: [
+      ...ctx.packageJson.effect.generateIndex.exclude,
+      "**/internal/**",
+      "**/index.ts",
+    ],
   })
 
   const content = yield* Effect.forEach(
     matches,
-    module =>
-      Effect.gen(function*(_) {
-        const file = modules[module]
-        const content = yield* _(fs.readFileString(file))
+    file =>
+      Effect.gen(function*() {
+        const content = yield* fs.readFileString(`./src/${file}`)
         const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
         const moduleName = file
           .slice(file.lastIndexOf("/") + 1)
           .slice(0, -path.extname(file).length)
         const srcFile = file
-          .replace(/^\.\/src\//, "./")
           .replace(/\.ts$/, ".js")
           .replace(/\.tsx$/, ".jsx")
 
-        return `${topComment}\nexport * as ${moduleName} from "${srcFile}"`
+        return `${topComment}\nexport * as ${moduleName} from "./${srcFile}"`
       }),
     { concurrency: "inherit" },
   )

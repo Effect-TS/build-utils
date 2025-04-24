@@ -11,6 +11,9 @@ importers:
       micromatch:
         specifier: ^4.0.8
         version: 4.0.8
+      pkg-entry-points:
+        specifier: ^1.1.1
+        version: 1.1.1
     devDependencies:
       '@changesets/changelog-github':
         specifier: ^0.5.0
@@ -2407,6 +2410,9 @@ packages:
   pkg-dir@4.2.0:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
     engines: {node: '>=8'}
+
+  pkg-entry-points@1.1.1:
+    resolution: {integrity: sha512-BhZa7iaPmB4b3vKIACoppyUoYn8/sFs17VJJtzrzPZvEnN2nqrgg911tdL65lA2m1ml6UI3iPeYbZQ4VXpn1mA==}
 
   postcss-load-config@6.0.1:
     resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
@@ -5497,6 +5503,8 @@ snapshots:
   pkg-dir@4.2.0:
     dependencies:
       find-up: 4.1.0
+
+  pkg-entry-points@1.1.1: {}
 
   postcss-load-config@6.0.1(postcss@8.4.43)(yaml@2.5.0):
     dependencies:

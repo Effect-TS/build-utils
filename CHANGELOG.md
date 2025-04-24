@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.2
+
+### Patch Changes
+
+- [#76](https://github.com/Effect-TS/build-utils/pull/76) [`7614418`](https://github.com/Effect-TS/build-utils/commit/7614418855c0dab9317ef3221e1215c92fd773b4) Thanks [@fubhy](https://github.com/fubhy)! - Add support for glob exports
+
 ## 0.8.1
 
 ### Patch Changes

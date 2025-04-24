@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.3
+
+### Patch Changes
+
+- [#78](https://github.com/Effect-TS/build-utils/pull/78) [`ae0c106`](https://github.com/Effect-TS/build-utils/commit/ae0c106b3c685766bfe4eeebe3f21bef816d96f5) Thanks [@fubhy](https://github.com/fubhy)! - Added dependencies
+
 ## 0.8.2
 
 ### Patch Changes

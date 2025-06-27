@@ -13,12 +13,13 @@ export const run = Effect.gen(function*() {
 
   const process = Effect.fnUntraced(function*(template: string) {
     const directory = path.dirname(template)
-    const content = yield* fs.readFileString(path.join(template))
+    const content = (yield* fs.readFileString(path.join(template))).trim() +
+      "\n\n"
     const modules = (yield* fs.readDirectory(directory)).map((_) =>
       path.basename(_)
     ).filter((path) =>
       path !== "index.ts" && path.endsWith(".ts") && !path.startsWith(".")
-    )
+    ).sort((a, b) => a.localeCompare(b))
     const moduleContents = yield* Effect.forEach(
       modules,
       (file) => processModule(directory, file),

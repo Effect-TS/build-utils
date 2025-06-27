@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.4
+
+### Patch Changes
+
+- [#80](https://github.com/Effect-TS/build-utils/pull/80) [`cb63c55`](https://github.com/Effect-TS/build-utils/commit/cb63c559c47f3dc15132e1cc28c224b2136cc273) Thanks [@tim-smart](https://github.com/tim-smart)! - add prepare-v4
+
 ## 0.8.3
 
 ### Patch Changes

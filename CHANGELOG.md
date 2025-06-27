@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.6
+
+### Patch Changes
+
+- [#84](https://github.com/Effect-TS/build-utils/pull/84) [`a8f8545`](https://github.com/Effect-TS/build-utils/commit/a8f85451c20c4adad2de7f15d402c568210ffce4) Thanks [@tim-smart](https://github.com/tim-smart)! - add pack v4
+
 ## 0.8.5
 
 ### Patch Changes

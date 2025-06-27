@@ -1,46 +1,45 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Path } from "@effect/platform/Path"
-import * as Schema from "@effect/schema/Schema"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
+import * as Schema from "effect/Schema"
 import { getPackageEntryPointsSync } from "pkg-entry-points"
 
 const effectConfigDefaults = {
   generateExports: {
     include: ["*.ts", "impl/*.ts"],
-    exclude: [],
+    exclude: []
   },
   generateIndex: {
     include: ["*.ts"],
-    exclude: [],
-  },
+    exclude: []
+  }
 }
 export class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
   generateExports: Schema.optionalWith(
     Schema.Struct({
       include: Schema.optionalWith(Schema.Array(Schema.String), {
-        default: () => effectConfigDefaults.generateExports.include,
+        default: () => effectConfigDefaults.generateExports.include
       }),
       exclude: Schema.optionalWith(Schema.Array(Schema.String), {
-        default: () => effectConfigDefaults.generateExports.exclude,
-      }),
+        default: () => effectConfigDefaults.generateExports.exclude
+      })
     }),
-    { default: () => effectConfigDefaults.generateExports },
+    { default: () => effectConfigDefaults.generateExports }
   ),
   generateIndex: Schema.optionalWith(
     Schema.Struct({
       include: Schema.optionalWith(Schema.Array(Schema.String), {
-        default: () => effectConfigDefaults.generateIndex.include,
+        default: () => effectConfigDefaults.generateIndex.include
       }),
       exclude: Schema.optionalWith(Schema.Array(Schema.String), {
-        default: () => effectConfigDefaults.generateIndex.exclude,
-      }),
+        default: () => effectConfigDefaults.generateIndex.exclude
+      })
     }),
-    { default: () => effectConfigDefaults.generateIndex },
-  ),
+    { default: () => effectConfigDefaults.generateIndex }
+  )
 }) {
   static readonly default = new EffectConfig(effectConfigDefaults)
 }
@@ -52,7 +51,7 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   private: Schema.optionalWith(Schema.Boolean, { default: () => false }),
   publishConfig: Schema.optional(Schema.Struct({
     provenance: Schema.optionalWith(Schema.Boolean, { default: () => false }),
-    executableFiles: Schema.optional(Schema.Array(Schema.String)),
+    executableFiles: Schema.optional(Schema.Array(Schema.String))
   })),
   license: Schema.String,
   author: Schema.optional(
@@ -61,48 +60,48 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
       Schema.Struct({
         name: Schema.String,
         email: Schema.String,
-        url: Schema.optional(Schema.String),
-      }),
-    ),
+        url: Schema.optional(Schema.String)
+      })
+    )
   ),
   repository: Schema.Union(
     Schema.String,
     Schema.Struct({
       type: Schema.String,
       url: Schema.String,
-      directory: Schema.optional(Schema.String),
-    }),
+      directory: Schema.optional(Schema.String)
+    })
   ),
   homepage: Schema.optional(Schema.String),
   sideEffects: Schema.optionalWith(Schema.Array(Schema.String), {
-    default: () => [],
+    default: () => []
   }),
   exports: Schema.optional(
     Schema.Record({
       key: Schema.String,
-      value: Schema.Union(Schema.String, Schema.Null),
-    }),
+      value: Schema.Union(Schema.String, Schema.Null)
+    })
   ),
   dependencies: Schema.optional(
-    Schema.Record({ key: Schema.String, value: Schema.String }),
+    Schema.Record({ key: Schema.String, value: Schema.String })
   ),
   peerDependencies: Schema.optional(
-    Schema.Record({ key: Schema.String, value: Schema.String }),
+    Schema.Record({ key: Schema.String, value: Schema.String })
   ),
   peerDependenciesMeta: Schema.optional(
     Schema.Record({
       key: Schema.String,
-      value: Schema.Struct({ optional: Schema.Boolean }),
-    }),
+      value: Schema.Struct({ optional: Schema.Boolean })
+    })
   ),
   optionalDependencies: Schema.optional(
-    Schema.Record({ key: Schema.String, value: Schema.String }),
+    Schema.Record({ key: Schema.String, value: Schema.String })
   ),
   gitHead: Schema.optional(Schema.String),
   bin: Schema.optional(Schema.Unknown),
   effect: Schema.optionalWith(EffectConfig, {
-    default: () => EffectConfig.default,
-  }),
+    default: () => EffectConfig.default
+  })
 }) {
   static readonly decode = Schema.decodeUnknown(this)
 }
@@ -112,13 +111,13 @@ const make = Effect.gen(function*() {
   const path = yield* Path
 
   const packageJson = fs.readFileString("./package.json").pipe(
-    Effect.map(_ => JSON.parse(_)),
+    Effect.map((_) => JSON.parse(_)),
     Effect.flatMap(PackageJson.decode),
-    Effect.withSpan("PackageContext/packageJson"),
+    Effect.withSpan("PackageContext/packageJson")
   )
 
   const entrypoints = Effect.try(() => getPackageEntryPointsSync("."))
-    .pipe(Effect.map(entrypoint => {
+    .pipe(Effect.map((entrypoint) => {
       const output: Record<string, {
         original: string
         stripped: string
@@ -137,7 +136,7 @@ const make = Effect.gen(function*() {
           output[key] = {
             original,
             stripped,
-            ts,
+            ts
           }
         }
       }
@@ -164,21 +163,21 @@ const make = Effect.gen(function*() {
     hasMjs,
     hasEsm,
     hasDts,
-    hasSrc,
+    hasSrc
   }, { concurrency: "inherit" }).pipe(
     Effect.let(
       "hasMain",
       ({ hasMainCjs, hasMainEsm, hasMainMjs }) =>
-        hasMainCjs || hasMainMjs || hasMainEsm,
+        hasMainCjs || hasMainMjs || hasMainEsm
     ),
-    Effect.withSpan("PackageContext/make"),
+    Effect.withSpan("PackageContext/make")
   )
 })
 
 export interface PackageContext extends Effect.Effect.Success<typeof make> {}
 export const PackageContext = Context.GenericTag<PackageContext>(
-  "@effect/build-tools/PackageContext",
+  "@effect/build-tools/PackageContext"
 )
 export const PackageContextLive = Layer.effect(PackageContext, make).pipe(
-  Layer.provide(NodeFileSystem.layer),
+  Layer.provide(NodeFileSystem.layer)
 )

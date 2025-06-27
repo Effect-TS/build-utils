@@ -2,11 +2,11 @@ import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem"
 import * as NodePath from "@effect/platform-node/NodePath"
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Path } from "@effect/platform/Path"
-import * as Schema from "@effect/schema/Schema"
 import * as Array from "effect/Array"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
+import * as Schema from "effect/Schema"
 import { FsUtils, FsUtilsLive } from "./FsUtils"
 
 const defaultGitignoreTemplate = `coverage/
@@ -32,7 +32,7 @@ export const run = Effect.gen(function*(_) {
     Effect.orElse(() =>
       fsUtils.readJson("./tsconfig.base.json").pipe(
         Effect.orElse(() => fsUtils.readJson("./tsconfig.json")),
-        Effect.map(config => {
+        Effect.map((config) => {
           delete config.extends
           delete config.exclude
           delete config.compilerOptions.outDir
@@ -49,14 +49,14 @@ export const run = Effect.gen(function*(_) {
           config.compilerOptions.skipLibCheck = true
           config.include = ["**/*"]
           return config
-        }),
+        })
       )
-    ),
+    )
   )
 
   const gitIgnoreTemplate = yield* _(
     fs.readFileString("./.gitignore.template"),
-    Effect.orElseSucceed(() => defaultGitignoreTemplate),
+    Effect.orElseSucceed(() => defaultGitignoreTemplate)
   )
 
   const packages = yield* _(topPackageJson.packages)
@@ -73,9 +73,9 @@ export const run = Effect.gen(function*(_) {
       const exportPrefix = slugify(pkg.name)
       const entrypoints = yield* _(fsUtils.glob(pkg.preconstruct.entrypoints, {
         nodir: true,
-        cwd: path_.join(dir, "src"),
+        cwd: path_.join(dir, "src")
       }))
-      const modules = entrypoints.filter(_ => _ !== "index.ts").map(_ =>
+      const modules = entrypoints.filter((_) => _ !== "index.ts").map((_) =>
         _.replace(/\.tsx?$/, "")
       ).sort()
       const files = [
@@ -89,50 +89,49 @@ export const run = Effect.gen(function*(_) {
             }
             return acc
           }, [])
-          .sort(),
+          .sort()
       ]
       const exports: Record<string, any> = {
         ".": {
           types: "./dist/declarations/src/index.d.ts",
           module: `./dist/${exportPrefix}.esm.js`,
           import: `./dist/${exportPrefix}.cjs.mjs`,
-          default: `./dist/${exportPrefix}.cjs.js`,
+          default: `./dist/${exportPrefix}.cjs.js`
         },
-        "./package.json": "./package.json",
+        "./package.json": "./package.json"
       }
-      modules.forEach(module => {
+      modules.forEach((module) => {
         const moduleSafe = slugify(module)
         exports[`./${module}`] = {
           types: `./dist/declarations/src/${module}.d.ts`,
           module: `./${module}/dist/${exportPrefix}-${moduleSafe}.esm.js`,
           import: `./${module}/dist/${exportPrefix}-${moduleSafe}.cjs.mjs`,
-          default: `./${module}/dist/${exportPrefix}-${moduleSafe}.cjs.js`,
+          default: `./${module}/dist/${exportPrefix}-${moduleSafe}.cjs.js`
         }
       })
       const gitignore = `${gitIgnoreTemplate}
 
 # files
 /src/tsconfig.json
-${files.map(_ => `/${_}`).join("\n")}
+${files.map((_) => `/${_}`).join("\n")}
 `
       const vscodeIgnore = Object.fromEntries(
-        files.map(_ => [path_.join(dir, _), true]),
+        files.map((_) => [path_.join(dir, _), true])
       )
 
       return {
         pkg: {
           ...pkgRaw,
           files: ["src", ...files],
-          exports,
+          exports
         },
         config: pkg.effect,
         modules,
         gitignore,
-        vscodeIgnore,
+        vscodeIgnore
       } as const
     })
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface PkgInfo
     extends Effect.Effect.Success<ReturnType<typeof processPackage>>
   {}
@@ -140,48 +139,48 @@ ${files.map(_ => `/${_}`).join("\n")}
   const genIndex = (
     dir: string,
     pkgName: string,
-    modules: ReadonlyArray<string>,
+    modules: ReadonlyArray<string>
   ) =>
     Effect.gen(function*(_) {
       const template = yield* _(
         fs.readFileString(path_.join(dir, "src/.index.ts")),
-        Effect.map(_ => _.trim() + "\n\n"),
-        Effect.orElseSucceed(() => ""),
+        Effect.map((_) => _.trim() + "\n\n"),
+        Effect.orElseSucceed(() => "")
       )
       const content = yield* _(
         Effect.forEach(
-          modules.filter(_ => !_.includes("/")),
-          module =>
+          modules.filter((_) => !_.includes("/")),
+          (module) =>
             Effect.map(
               fs.readFileString(path_.join(dir, "src", `${module}.ts`)),
-              content => {
+              (content) => {
                 const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
                 return `${topComment}
 export * as ${module} from "${pkgName}/${module}"`
-              },
+              }
             ),
-          { concurrency: "inherit" },
-        ),
+          { concurrency: "inherit" }
+        )
       )
       return `${template}${content.join("\n\n")}\n`
     })
 
   const handlePkgInfo = (
     dir: string,
-    { config, gitignore, modules, pkg }: PkgInfo,
+    { config, gitignore, modules, pkg }: PkgInfo
   ) =>
     Effect.all([
       fsUtils.writeJson(path_.join(dir, "package.json"), pkg).pipe(
-        Effect.uninterruptible,
+        Effect.uninterruptible
       ),
       fs.writeFileString(path_.join(dir, ".gitignore"), gitignore).pipe(
-        Effect.uninterruptible,
+        Effect.uninterruptible
       ),
       config.generateIndex
         ? Effect.flatMap(
           genIndex(dir, pkg.name, modules),
-          content =>
-            fs.writeFileString(path_.join(dir, "src/index.ts"), content),
+          (content) =>
+            fs.writeFileString(path_.join(dir, "src/index.ts"), content)
         )
         : Effect.void,
       fsUtils.writeJson(path_.join(dir, "src/tsconfig.json"), {
@@ -190,59 +189,59 @@ export * as ${module} from "${pkgName}/${module}"`
           ...tsConfig.compilerOptions,
           paths: {
             [pkg.name]: ["./index.ts"],
-            [`${pkg.name}/*`]: ["./*.ts"],
-          },
-        },
+            [`${pkg.name}/*`]: ["./*.ts"]
+          }
+        }
       }).pipe(
-        Effect.uninterruptible,
-      ),
+        Effect.uninterruptible
+      )
     ], { concurrency: "inherit", discard: true })
 
   const updateVscodeSettings = (ignore: Record<string, boolean>) =>
     fsUtils.readJson("./.vscode/settings.json").pipe(
-      Effect.flatMap(settings =>
+      Effect.flatMap((settings) =>
         fsUtils.writeJson("./.vscode/settings.json", {
           ...settings,
-          ["files.exclude"]: ignore,
+          ["files.exclude"]: ignore
         })
-      ),
+      )
     )
 
   yield* _(
-    Effect.forEach(packages, dir =>
+    Effect.forEach(packages, (dir) =>
       Effect.tap(
         processPackage(dir),
-        info => handlePkgInfo(dir, info),
+        (info) => handlePkgInfo(dir, info)
       ), { concurrency: "inherit" }),
-    Effect.tap(infos =>
+    Effect.tap((infos) =>
       updateVscodeSettings(
         Array.reduce(
           infos,
           {},
-          (a, b) => ({ ...a, ...b.vscodeIgnore }),
-        ),
+          (a, b) => ({ ...a, ...b.vscodeIgnore })
+        )
       ).pipe(
-        Effect.ignore,
+        Effect.ignore
       )
     ),
     Effect.withConcurrency(10),
-    Effect.awaitAllChildren,
+    Effect.awaitAllChildren
   )
 }).pipe(
   Effect.provide(
-    Layer.mergeAll(FsUtilsLive, NodeFileSystem.layer, NodePath.layerPosix),
-  ),
+    Layer.mergeAll(FsUtilsLive, NodeFileSystem.layer, NodePath.layerPosix)
+  )
 )
 
 class EffectConfig extends Schema.Class<EffectConfig>("EffectConfig")({
   generateIndex: Schema.optionalWith(Schema.Boolean, { default: () => false }),
   includeInternal: Schema.optionalWith(Schema.Boolean, {
-    default: () => false,
-  }),
+    default: () => false
+  })
 }) {
   static readonly default = new EffectConfig({
     generateIndex: false,
-    includeInternal: false,
+    includeInternal: false
   })
 }
 
@@ -250,22 +249,22 @@ class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   name: Schema.String,
   preconstruct: Schema.Struct({
     entrypoints: Schema.optionalWith(Schema.Array(Schema.String), {
-      default: () => [],
+      default: () => []
     }),
     packages: Schema.optionalWith(Schema.NonEmptyArray(Schema.String), {
-      as: "Option",
-    }),
+      as: "Option"
+    })
   }),
   effect: Schema.optionalWith(EffectConfig, {
-    default: () => EffectConfig.default,
-  }),
+    default: () => EffectConfig.default
+  })
 }) {
   static readonly decode = Schema.decodeUnknown(this)
 
   get packages(): Effect.Effect<Array<string>, Error, FsUtils> {
     return Option.match(this.preconstruct.packages, {
       onNone: () => Effect.succeed(["."]),
-      onSome: globs => Effect.flatMap(FsUtils, fs => fs.glob(globs)),
+      onSome: (globs) => Effect.flatMap(FsUtils, (fs) => fs.glob(globs))
     })
   }
 }

@@ -14,8 +14,8 @@ export const run = Effect.gen(function*() {
   const ctx = yield* PackageContext
 
   const template = yield* fs.readFileString("src/.index.ts").pipe(
-    Effect.map(_ => _.trim() + "\n\n"),
-    Effect.orElseSucceed(() => ""),
+    Effect.map((_) => _.trim() + "\n\n"),
+    Effect.orElseSucceed(() => "")
   )
 
   const modules = Object.entries(ctx.entrypoints)
@@ -25,18 +25,18 @@ export const run = Effect.gen(function*() {
 
   const matches = micromatch(modules, [
     "*.ts",
-    ...ctx.packageJson.effect.generateIndex.include,
+    ...ctx.packageJson.effect.generateIndex.include
   ], {
     ignore: [
       ...ctx.packageJson.effect.generateIndex.exclude,
       "**/internal/**",
-      "**/index.ts",
-    ],
+      "**/index.ts"
+    ]
   })
 
   const content = yield* Effect.forEach(
     matches,
-    file =>
+    (file) =>
       Effect.gen(function*() {
         const content = yield* fs.readFileString(`./src/${file}`)
         const topComment = content.match(/\/\*\*\n.+?\*\//s)?.[0] ?? ""
@@ -49,13 +49,13 @@ export const run = Effect.gen(function*() {
 
         return `${topComment}\nexport * as ${moduleName} from "./${srcFile}"`
       }),
-    { concurrency: "inherit" },
+    { concurrency: "inherit" }
   )
 
   const index = `${template}${content.join("\n\n")}\n`
 
   yield* fs.writeFileString("src/index.ts", index).pipe(
-    Effect.uninterruptible,
+    Effect.uninterruptible
   )
 }).pipe(
   Effect.provide(
@@ -63,7 +63,7 @@ export const run = Effect.gen(function*() {
       FsUtilsLive,
       PackageContextLive,
       NodeFileSystem.layer,
-      NodePath.layerPosix,
-    ),
-  ),
+      NodePath.layerPosix
+    )
+  )
 )

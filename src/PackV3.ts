@@ -24,12 +24,12 @@ export const run = Effect.gen(function*() {
       repository: ctx.packageJson.repository,
       sideEffects: [
         ...(ctx.hasCjs ? ["/dist/cjs/"] : []),
-        ...(ctx.hasEsm ? ["/dist/esm/"] : []),
-      ].flatMap(dir =>
-        ctx.packageJson.sideEffects.map(_ =>
+        ...(ctx.hasEsm ? ["/dist/esm/"] : [])
+      ].flatMap((dir) =>
+        ctx.packageJson.sideEffects.map((_) =>
           _.replace(".ts", ".js").replace(".tsx", ".js").replace("/src/", dir)
         )
-      ),
+      )
     }
 
     const addOptional = (key: keyof PackageJson) => {
@@ -57,7 +57,7 @@ export const run = Effect.gen(function*() {
     ) {
       out.publishConfig = {
         ...out.publishConfig,
-        executableFiles: ctx.packageJson.publishConfig.executableFiles,
+        executableFiles: ctx.packageJson.publishConfig.executableFiles
       }
     }
 
@@ -86,9 +86,9 @@ export const run = Effect.gen(function*() {
           return [entry, {
             types: `./dist/dts/${module.stripped}.d.ts`,
             import: `./dist/esm/${module.stripped}.js`,
-            default: `./dist/cjs/${module.stripped}.js`,
+            default: `./dist/cjs/${module.stripped}.js`
           }]
-        }),
+        })
       )
 
       out.typesVersions = {
@@ -96,9 +96,9 @@ export const run = Effect.gen(function*() {
           Object.entries(ctx.entrypoints)
             .filter(([entry, module]) => entry !== "." && module.ts)
             .map(([entry, module]) => [entry.replace(/^\.\//, ""), [
-              `./dist/dts/${module.stripped}.d.ts`,
-            ]]),
-        ),
+              `./dist/dts/${module.stripped}.d.ts`
+            ]])
+        )
       }
     }
 
@@ -114,38 +114,38 @@ export const run = Effect.gen(function*() {
         yield* fsUtils.mkdirCached(`dist/${entry}`)
 
         const out: Record<string, any> = {
-          sideEffects: [],
+          sideEffects: []
         }
 
         out.main = path.relative(
           `dist/${entry}`,
-          `dist/dist/${ctx.hasCjs ? "cjs" : "esm"}/${module.stripped}.js`,
+          `dist/dist/${ctx.hasCjs ? "cjs" : "esm"}/${module.stripped}.js`
         )
 
         if (ctx.hasEsm && ctx.hasCjs) {
           out.module = path.relative(
             `dist/${entry}`,
-            `dist/dist/esm/${module.stripped}.js`,
+            `dist/dist/esm/${module.stripped}.js`
           )
         }
 
         out.types = path.relative(
           `dist/${entry}`,
-          `dist/dist/dts/${module.stripped}.d.ts`,
+          `dist/dist/dts/${module.stripped}.d.ts`
         )
 
         yield* fsUtils.writeJson(`dist/${entry}/package.json`, out)
       }),
     {
       concurrency: "inherit",
-      discard: true,
-    },
+      discard: true
+    }
   )
 
   const writePackageJson = buildPackageJson.pipe(
-    Effect.map(_ => JSON.stringify(_, null, 2)),
-    Effect.flatMap(_ => fs.writeFileString("dist/package.json", _)),
-    Effect.withSpan("Pack-v3/buildPackageJson"),
+    Effect.map((_) => JSON.stringify(_, null, 2)),
+    Effect.flatMap((_) => fs.writeFileString("dist/package.json", _)),
+    Effect.withSpan("Pack-v3/buildPackageJson")
   )
 
   const mkDist = fsUtils.rmAndMkdir("dist")
@@ -156,10 +156,10 @@ export const run = Effect.gen(function*() {
     ? fsUtils.rmAndCopy("build/esm", "dist/dist/esm").pipe(
       Effect.zipRight(fsUtils.writeJson("dist/dist/esm/package.json", {
         type: "module",
-        sideEffects: ctx.packageJson.sideEffects.map(_ =>
+        sideEffects: ctx.packageJson.sideEffects.map((_) =>
           _.replace(".ts", ".js").replace("/src/", "/")
-        ),
-      })),
+        )
+      }))
     )
     : Effect.void
   const copyCjs = ctx.hasCjs
@@ -170,7 +170,7 @@ export const run = Effect.gen(function*() {
     : Effect.void
   const copySrc = ctx.hasSrc
     ? fsUtils.rmAndCopy("src", "dist/src").pipe(
-      Effect.zipRight(fs.remove("dist/src/.index.ts").pipe(Effect.ignore)),
+      Effect.zipRight(fs.remove("dist/src/.index.ts").pipe(Effect.ignore))
     )
     : Effect.void
 
@@ -178,9 +178,9 @@ export const run = Effect.gen(function*() {
     copyEsm,
     copyCjs,
     copyDts,
-    copySrc,
+    copySrc
   ], { concurrency: "inherit", discard: true }).pipe(
-    Effect.withSpan("Pack-v3/copySources"),
+    Effect.withSpan("Pack-v3/copySources")
   )
 
   yield* mkDist
@@ -189,9 +189,9 @@ export const run = Effect.gen(function*() {
     copyReadme,
     copyLicense,
     copySources,
-    createProxies,
+    createProxies
   ], { concurrency: "inherit", discard: true }).pipe(
-    Effect.withConcurrency(10),
+    Effect.withConcurrency(10)
   )
 }).pipe(
   Effect.provide(
@@ -199,7 +199,7 @@ export const run = Effect.gen(function*() {
       NodeFileSystem.layer,
       NodePath.layerPosix,
       FsUtilsLive,
-      PackageContextLive,
-    ),
-  ),
+      PackageContextLive
+    )
+  )
 )

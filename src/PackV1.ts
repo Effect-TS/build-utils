@@ -29,10 +29,10 @@ export const run = Effect.gen(function*(_) {
     copyCjs,
     copyMjs,
     copyDts,
-    copySrc,
+    copySrc
   ], { concurrency: "inherit", discard: true }).pipe(
     Effect.zipRight(modifySourceMaps),
-    Effect.withSpan("Pack-v1/copySources"),
+    Effect.withSpan("Pack-v1/copySources")
   )
 
   const buildPackageJson = Effect.sync(() => {
@@ -43,21 +43,21 @@ export const run = Effect.gen(function*(_) {
       license: ctx.packageJson.license,
       repository: ctx.packageJson.repository,
       publishConfig: {
-        access: "public",
+        access: "public"
       },
       exports: {
         "./*": {
           import: {
             types: "./*.d.ts",
-            default: "./mjs/*.mjs",
+            default: "./mjs/*.mjs"
           },
           require: {
             types: "./*.d.ts",
-            default: "./*.js",
-          },
-        },
+            default: "./*.js"
+          }
+        }
       },
-      sideEffects: [],
+      sideEffects: []
     }
     const addOptional = (key: keyof PackageJson) => {
       if (ctx.packageJson[key]) {
@@ -79,14 +79,14 @@ export const run = Effect.gen(function*(_) {
         out.main = "./mjs/index.mjs"
         out.exports["."].import = {
           types: `./index.d.ts`,
-          default: `./mjs/index.mjs`,
+          default: `./mjs/index.mjs`
         }
       }
       if (ctx.hasMainCjs) {
         out.main = "./index.js"
         out.exports["."].require = {
           types: `./index.d.ts`,
-          default: `./index.js`,
+          default: `./index.js`
         }
       }
     }
@@ -95,8 +95,8 @@ export const run = Effect.gen(function*(_) {
   })
 
   const writePackageJson = buildPackageJson.pipe(
-    Effect.map(_ => JSON.stringify(_, null, 2)),
-    Effect.flatMap(_ => fs.writeFileString("./dist/package.json", _)),
+    Effect.map((_) => JSON.stringify(_, null, 2)),
+    Effect.flatMap((_) => fs.writeFileString("./dist/package.json", _))
   )
 
   // pack
@@ -107,14 +107,14 @@ export const run = Effect.gen(function*(_) {
       copyLicense,
       copyTsConfig,
       writePackageJson,
-      copySources,
+      copySources
     ], { concurrency: "inherit", discard: true }),
-    Effect.withConcurrency(10),
+    Effect.withConcurrency(10)
   )
 }).pipe(
   Effect.provide(
-    Layer.mergeAll(NodeFileSystem.layer, FsUtilsLive, PackageContextLive),
-  ),
+    Layer.mergeAll(NodeFileSystem.layer, FsUtilsLive, PackageContextLive)
+  )
 )
 
 // ==== utils
@@ -127,23 +127,23 @@ const replace = (content: string, path: string): string =>
         k === "sources"
           ? ([
             k,
-            Array.map(v as Array<string>, replaceString(path)),
+            Array.map(v as Array<string>, replaceString(path))
           ] as const)
           : ([k, v] as const)
       ),
-      Array.reduce({}, (acc, [k, v]) => ({ ...acc, [k]: v })),
-    ),
+      Array.reduce({}, (acc, [k, v]) => ({ ...acc, [k]: v }))
+    )
   )
 
 const replaceString = (path: string) => {
   const dir = posix.dirname(path)
   const patch: (x: string) => string = path.startsWith("dist/mjs/")
-    ? x => x.replace(/(.*)\.\.\/src(.*)/gm, "$1src$2")
-    : x => x.replace(/(.*)\.\.\/\.\.\/src(.*)/gm, "$1src$2")
+    ? (x) => x.replace(/(.*)\.\.\/src(.*)/gm, "$1src$2")
+    : (x) => x.replace(/(.*)\.\.\/\.\.\/src(.*)/gm, "$1src$2")
   return (content: string) =>
     pipe(
       patch(content),
-      x => posix.relative(dir, posix.join(dir, x)),
-      x => (x.startsWith(".") ? x : "./" + x),
+      (x) => posix.relative(dir, posix.join(dir, x)),
+      (x) => (x.startsWith(".") ? x : "./" + x)
     )
 }

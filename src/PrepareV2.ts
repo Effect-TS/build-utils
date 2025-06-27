@@ -20,28 +20,28 @@ export const run = Effect.gen(function*() {
     ignore: [
       ...pkg.effect.generateIndex.exclude,
       "**/internal/**",
-      "**/index.ts",
-    ],
+      "**/index.ts"
+    ]
   })
 
   const modules = entrypoints
-    .map(file => file.replace(/\\/, "/").replace(/\.ts$/, ""))
+    .map((file) => file.replace(/\\/, "/").replace(/\.ts$/, ""))
     .sort()
 
   const template = yield* fs.readFileString("src/.index.ts").pipe(
-    Effect.map(_ => _.trim() + "\n\n"),
-    Effect.orElseSucceed(() => ""),
+    Effect.map((_) => _.trim() + "\n\n"),
+    Effect.orElseSucceed(() => "")
   )
 
   const content = yield* Effect.forEach(
     modules,
-    module =>
+    (module) =>
       Effect.gen(function*(_) {
         const content = yield* _(
-          fs.readFileString(path.join("src", `${module}.ts`)),
+          fs.readFileString(path.join("src", `${module}.ts`))
         )
         const hasImpl = yield* _(
-          fs.exists(path.join("src", "impl", `${module}.ts`)),
+          fs.exists(path.join("src", "impl", `${module}.ts`))
         )
 
         const moduleName = module.slice(module.lastIndexOf("/") + 1)
@@ -55,16 +55,16 @@ export const run = Effect.gen(function*() {
 
         return `${topComment}\nexport * as ${moduleName} from "./${module}.js"`
       }),
-    { concurrency: "inherit" },
+    { concurrency: "inherit" }
   )
 
   const index = `${template}${content.join("\n\n")}\n`
 
   yield* fs.writeFileString("src/index.ts", index).pipe(
-    Effect.uninterruptible,
+    Effect.uninterruptible
   )
 }).pipe(
   Effect.provide(
-    Layer.mergeAll(FsUtilsLive, NodeFileSystem.layer, NodePath.layerPosix),
-  ),
+    Layer.mergeAll(FsUtilsLive, NodeFileSystem.layer, NodePath.layerPosix)
+  )
 )

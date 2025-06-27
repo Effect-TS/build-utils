@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.5
+
+### Patch Changes
+
+- [#82](https://github.com/Effect-TS/build-utils/pull/82) [`554ca2e`](https://github.com/Effect-TS/build-utils/commit/554ca2e64697bcd24f6714240cbd28c9f391bc35) Thanks [@tim-smart](https://github.com/tim-smart)! - prepare v4 whitespace tweaks
+
 ## 0.8.4
 
 ### Patch Changes

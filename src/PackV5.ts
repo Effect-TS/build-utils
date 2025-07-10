@@ -47,6 +47,7 @@ export const run = Effect.gen(function*() {
   const buildPackageJson = Effect.sync(() => {
     const out: Record<string, any> = {
       name: ctx.packageJson.name,
+      type: ctx.packageJson.type,
       version: ctx.packageJson.version,
       description: ctx.packageJson.description,
       license: ctx.packageJson.license,

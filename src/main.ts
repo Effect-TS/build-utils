@@ -8,6 +8,7 @@ import * as PackV1 from "./PackV1"
 import * as PackV2 from "./PackV2"
 import * as PackV3 from "./PackV3"
 import * as PackV4 from "./PackV4"
+import * as PackV5 from "./PackV5"
 import * as PrepareV1 from "./PrepareV1"
 import * as PrepareV2 from "./PrepareV2"
 import * as PrepareV3 from "./PrepareV3"
@@ -19,6 +20,7 @@ const run = Command.make("build-utils").pipe(
     Command.make("pack-v2", {}, () => PackV2.run),
     Command.make("pack-v3", {}, () => PackV3.run),
     Command.make("pack-v4", {}, () => PackV4.run),
+    Command.make("pack-v5", {}, () => PackV5.run),
     Command.make("prepare-v1", {}, () => PrepareV1.run),
     Command.make("prepare-v2", {}, () => PrepareV2.run),
     Command.make("prepare-v3", {}, () => PrepareV3.run),

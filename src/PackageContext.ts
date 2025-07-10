@@ -48,6 +48,9 @@ export class PackageJson extends Schema.Class<PackageJson>("PackageJson")({
   name: Schema.String,
   version: Schema.String,
   description: Schema.String,
+  type: Schema.optionalWith(Schema.Literal("commonjs", "module"), {
+    default: () => "commonjs"
+  }),
   private: Schema.optionalWith(Schema.Boolean, { default: () => false }),
   publishConfig: Schema.optional(Schema.Struct({
     provenance: Schema.optionalWith(Schema.Boolean, { default: () => false }),

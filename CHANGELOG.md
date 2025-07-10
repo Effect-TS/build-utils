@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.8
+
+### Patch Changes
+
+- [#88](https://github.com/Effect-TS/build-utils/pull/88) [`328becf`](https://github.com/Effect-TS/build-utils/commit/328becfbaa4b1ca4d29ae2412d88c42ea4040ec0) Thanks [@fubhy](https://github.com/fubhy)! - Take `type` from package.json
+
 ## 0.8.7
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @effect/build-utils
 
+## 0.8.9
+
+### Patch Changes
+
+- [#90](https://github.com/Effect-TS/build-utils/pull/90) [`7197c2c`](https://github.com/Effect-TS/build-utils/commit/7197c2c8c5052114695233f63a07ab0fef32848b) Thanks [@fubhy](https://github.com/fubhy)! - Keep .ts extension in generated barrel files
+
 ## 0.8.8
 
 ### Patch Changes

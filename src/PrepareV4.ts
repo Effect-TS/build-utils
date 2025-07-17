@@ -13,7 +13,7 @@ export const run = Effect.gen(function*() {
 
   const process = Effect.fnUntraced(function*(template: string) {
     const directory = path.dirname(template)
-    const content = (yield* fs.readFileString(path.join(template))).trim() +
+    const content = (yield* fs.readFileString(template)).trim() +
       "\n\n"
     const modules = (yield* fs.readDirectory(directory)).map((_) =>
       path.basename(_)
@@ -26,11 +26,9 @@ export const run = Effect.gen(function*() {
       { concurrency: "inherit" }
     )
     yield* fs.writeFileString(
-      path.join(directory, "index.ts"),
+      template.replace(/\.tpl$/, ""),
       `${content}${moduleContents.join("\n\n")}\n`
-    ).pipe(
-      Effect.uninterruptible
-    )
+    ).pipe(Effect.uninterruptible)
   }, Effect.ignore)
 
   const processModule = Effect.fnUntraced(function*(
@@ -42,14 +40,11 @@ export const run = Effect.gen(function*() {
     const moduleName = file
       .slice(file.lastIndexOf("/") + 1)
       .slice(0, -path.extname(file).length)
-    const srcFile = file
-      .replace(/\.ts$/, ".js")
-      .replace(/\.tsx$/, ".jsx")
 
-    return `${topComment}\nexport * as ${moduleName} from "./${srcFile}"`
+    return `${topComment}\nexport * as ${moduleName} from "./${file}"`
   })
 
-  const templates = yield* fsUtils.glob("src/**/.index.ts")
+  const templates = yield* fsUtils.glob("src/**/*.tpl")
 
   yield* Effect.forEach(
     templates,

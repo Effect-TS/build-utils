@@ -7,29 +7,27 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 permissions: {}
 
 jobs:
   build:
+    if: github.repository_owner == 'Effect-Ts'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-      - name: Install node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: 22.2.0
+      - uses: actions/checkout@v4
       - name: Install dependencies
-        shell: bash
-        run: pnpm install
+        uses: ./.github/actions/setup
+        with:
+          registry-url: "https://registry.npmjs.org"
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest
       - name: Type check
         run: tsc --noEmit
       - run: pnpm build
@@ -41,4 +39,3 @@ jobs:
           publish: pnpm exec changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
